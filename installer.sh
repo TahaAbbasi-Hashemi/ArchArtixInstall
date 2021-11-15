@@ -48,7 +48,7 @@ touch /boot/loader/loader.conf
 touch /boot/loader/entries/arch.conf
 
 UUID3=$(blkid -s UUID -o value "$driveP"3)
-echo -e 'title ArchLinux\n linux /vmlinuz-linux-zen\ninitrd /intel-ucode.img\ninitrd /initamfs-linux-zen.img\noptions cryptdevice=UUID=$UUID3:cryptroot root=/dev/mapper/MainSystem rw intel_iommu=on loglevel=3' > /boot/loader/entries/arch.conf
+echo -e 'title ArchLinux\n linux /vmlinuz-linux-zen\ninitrd /intel-ucode.img\ninitrd /initamfs-linux-zen.img\noptions cryptdevice=UUID='$UUID3':cryptroot root=/dev/mapper/MainSystem rw intel_iommu=on loglevel=3' > /boot/loader/entries/arch.conf
 echo -e "default arch.conf\ntimeout 5\nconsole-mode max\neditor no" >> /boot/loader/loader.conf
 
 bootctl --path=/boot install
