@@ -47,8 +47,10 @@ mount -o noatime,nodiratime,compress=zstd:2 /dev/mapper/mainSystem /mnt
 mkdir /mnt/boot
 mkdir /mnt/home
 mount -o noatime,nodiratime,compress=zstd:4 /dev/mapper/homePartion /mnt/home #Setup snaps for the home directory....
+mount "$DRIVE"1 /mnt/boot
+
 
 #nmcli device connect USERMAME password $WIFI_PASSWORD
 pacstrap /mnt base linux-zen linux-firmware intel-ucode 
 genfstab -U /mnt > /mnt/etc/fstab
-
+genfstab -U /mnt >> genstab
