@@ -26,6 +26,7 @@ touch /etc/wpa_supplicant/wpa_supplicant-wlp5s0.conf
 echo -e "ctrl_interface=/run/wpa_supplicant\nupdate_config=1\nupdate_config\nnetwork={\n    ssid='$WIFI_USERNAME'\n    psk='$WIFI_PASSWORD'\n}"> /etc/wpa_supplicant/wpa_supplicant-wlp5s0.conf
 
 #Users and passwords
+echo "ROOT THEN USERNAME PASSWORD"
 passwd
 useradd -m -g users -G wheel "$username"
 passwd "$username"
@@ -37,7 +38,7 @@ echo "tmpfs /tmp tmpfs defaults,noatime,mode=1777 0 0" >> /etc/fstab
 echo "tmpfs /home/$username/.cache tmpfs defaults,noatime 0 0" >> /etc/fstab
 
 #mkinitcpio
-echo -e "MODULES=()\nBINARIES=()\nFILES=()\HOOKT=(base udev autodetect modconf block encrypt filesystems keyboard fsck)\n" > /etc/mkinitcpio.conf
+echo -e "MODULES=()\nBINARIES=()\nFILES=()\nHOOKS=(base udev autodetect modconf block encrypt filesystems keyboard fsck)\n" > /etc/mkinitcpio.conf
 mkinitcpio -p linux-zen
 
 #Bootloader
@@ -51,7 +52,7 @@ echo -e 'title ArchLinux\n linux /vmlinuz-linux-zen\ninitrd /intel-ucode.img\nin
 echo -e "default arch.conf\ntimeout 5\nconsole-mode max\neditor no" >> /boot/loader/loader.conf
 
 bootctl --path=/boot install
-
+#Does systemd boot even work in virtual enviroments. 
 #ON artix linux need to compile systemd boot first.
 
 
