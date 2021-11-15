@@ -1,8 +1,8 @@
 #!/bin/sh
 
 #Constants
-driveP=/dev/nvme0n1p
-hostname=mainSystem #CAN THIS BE UPPERCASE???
+driveP=/dev/sda
+hostname=mainsystem #CAN THIS BE UPPERCASE???
 username=taha
 wifiP=password
 wifiU=username
@@ -38,7 +38,7 @@ echo "tmpfs /tmp tmpfs defaults,noatime,mode=1777 0 0" >> /etc/fstab
 echo "tmpfs /home/$username/.cache tmpfs defaults,noatime 0 0" >> /etc/fstab
 
 #mkinitcpio
-echo -e "MODULES=()\nBINARIES=()\nFILES=()\nHOOKS=(base udev autodetect modconf block encrypt filesystems keyboard fsck)\n" > /etc/mkinitcpio.conf
+echo -e "MODULES=()\nBINARIES=()\nFILES=()\nHOOKS=(base udev autodetect modconf block filesystems keyboard fsck)\n" > /etc/mkinitcpio.conf
 mkinitcpio -p linux-zen
 
 #Bootloader
@@ -48,7 +48,7 @@ touch /boot/loader/loader.conf
 touch /boot/loader/entries/arch.conf
 
 UUID3=$(blkid -s UUID -o value "$driveP"3)
-echo -e 'title ArchLinux\n linux /vmlinuz-linux-zen\ninitrd /intel-ucode.img\ninitrd /initamfs-linux-zen.img\noptions cryptdevice=UUID=$UUID3:cryptroot root=/dev/mapper/MainSystem rw intel_iommu=on loglevel=3' > /boot/loader/entries/arch.conf
+echo -e 'title ArchLinux\n linux /vmlinuz-linux-zen\ninitrd /intel-ucode.img\ninitrd /initamfs-linux-zen.img\noptions root=UUID=$UUID3 rw intel_iommu=on loglevel=3' > /boot/loader/entries/arch.conf
 echo -e "default arch.conf\ntimeout 5\nconsole-mode max\neditor no" >> /boot/loader/loader.conf
 
 bootctl --path=/boot install
