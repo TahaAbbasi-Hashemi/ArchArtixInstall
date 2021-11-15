@@ -35,11 +35,11 @@ cryptsetup open "$driveP"3 mainSystem
 cryptsetup open "$driveP"6 homePartion
 
 #Formatting
-mkfs.vfat "$driveP"1
+mkfs.fat -F32 -n LIUNXEFI "$driveP"1
 mkswap "$driveP"2
 swapon "$driveP"2
-mkfs.btrfs /dev/mapper/mainSystem 
-mkfs.btrfs /dev/mapper/homePartion
+mkfs.btrfs -L MainSystem /dev/mapper/mainSystem 
+mkfs.btrfs -L HomePartion /dev/mapper/homePartion
 
 #Mounting
 mount -o noatime,nodiratime,compress=zstd:2 /dev/mapper/mainSystem /mnt

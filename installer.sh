@@ -2,7 +2,7 @@
 
 #Constants
 driveP=/dev/nvme0n1p
-hostname=mainSystem #CAN THIS BE UPPERCASE???
+hostname=main #CAN THIS BE UPPERCASE???
 username=taha
 wifiP=password
 wifiU=username
@@ -20,7 +20,7 @@ echo $hostname >> /etc/hostname
 chsh -s /bin/zsh
 
 #internet stuff
-echo -e "127.0.0.1 localhost\n::1 localhost\n127.0.1.1 $hostname.localdomain $hostname" >> /etc/hosts
+echo -e "127.0.0.1 localhost\n::1 localhost\n127.0.1.1 "$hostname".localdomain "$hostname >> /etc/hosts
 mkdir /etc/wpa_supplicant
 touch /etc/wpa_supplicant/wpa_supplicant-wlp5s0.conf
 echo -e "ctrl_interface=/run/wpa_supplicant\nupdate_config=1\nupdate_config\nnetwork={\n    ssid='$wifiU'\n    psk='$wifiP'\n}"> /etc/wpa_supplicant/wpa_supplicant-wlp5s0.conf
@@ -35,10 +35,11 @@ echo "permit wheel as root" > /etc/doas.conf
 
 #Editing FSTAB
 echo "tmpfs /tmp tmpfs defaults,noatime,mode=1777 0 0" >> /etc/fstab
-echo "tmpfs /home/$username/.cache tmpfs defaults,noatime 0 0" >> /etc/fstab
+echo "tmpfs /home/"$username"/.cache tmpfs defaults,noatime 0 0" >> /etc/fstab
 
 #mkinitcpio
-echo -e "MODULES=()\nBINARIES=()\nFILES=()\nHOOKS=(base udev autodetect modconf block encrypt filesystems keyboard fsck)\n" > /etc/mkinitcpio.conf
+echo -e "MODULES=()\nBINARIES=(btrfs)\nFILES=()\nHOOKS=(base udev autodetect modconf block encrypt filesystems keyboard fsck)\n" > /etc/mkinitcpio.conf
+mkinitcpio -p
 mkinitcpio -p linux-zen
 
 #Bootloader
@@ -48,7 +49,7 @@ touch /boot/loader/loader.conf
 touch /boot/loader/entries/arch.conf
 
 UUID3=$(blkid -s UUID -o value "$driveP"3)
-echo -e 'title ArchLinux\n linux /vmlinuz-linux-zen\ninitrd /initramfs-linux-zen.img\noptions cryptdevice=UUID='$UUID3':cryptroot root=/dev/mapper/MainSystem rw loglevel=3' > /boot/loader/entries/arch.conf
+echo -e 'title ArchLinux\n linux /vmlinuz-linux-zen\ninitrd /initramfs-linux-zen.img\n options rd.luks.name='$UUID3':cryptroot root=/dev/mapper/MainSystem rd.luks.options=discard rw loglevel=3' > /boot/loader/entries/arch.conf
 echo -e "default arch.conf\ntimeout 5\nconsole-mode max\neditor no" >> /boot/loader/loader.conf
 
 bootctl --path=/boot install
