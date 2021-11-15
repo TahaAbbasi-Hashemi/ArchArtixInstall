@@ -16,6 +16,8 @@ sgdisk --new 3::+12G --typecode 3:8304 --change-name 3:"Main-System" "$DRIVE"
 sgdisk --new 4::+500M --typecode 4:8304 --change-name 4:"Sub-System" "$DRIVE"
 sgdisk --new 5::+500M --typecode 5:8304 --change-name 5:"Spare-System" "$DRIVE"
 sgdisk --new 6::: --typecode 6:8300 --change-name 6:"Home-Storage" "$DRIVE"
+partprobe $DRIVE #Saves Changes. 
+
 
 #Wiping Drives
 wipefs -af "$DRIVE"1
@@ -38,13 +40,13 @@ mkfs.vfat "$DRIVE"1
 mkswap "$DRIVE"2
 swapon "$DRIVE"2
 mkfs.btrfs /dev/mapper/mainSystem 
-mkfr.btrfs /dev/mapper/homePartion
+mkfs.btrfs /dev/mapper/homePartion
 
 #Mounting
-mount -0 noatime,nodiratime,compress=zstd:2 /dev/mapper/mainSystem /mnt
+mount -o noatime,nodiratime,compress=zstd:2 /dev/mapper/mainSystem /mnt
 mkdir /mnt/boot
 mkdir /mnt/home
-mount -0 noatime,nodiratime,compress=zstd:4 /dev/mapper/homePartion /mnt/home #Setup snaps for the home directory....
+mount -o noatime,nodiratime,compress=zstd:4 /dev/mapper/homePartion /mnt/home #Setup snaps for the home directory....
 
 #nmcli device connect USERMAME password $WIFI_PASSWORD
 pacstrap /mnt base linux-zen linux-firmware intel-ucode 
