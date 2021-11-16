@@ -33,25 +33,25 @@ wipefs -af "$driveP"6
 
 #Only encrypt what arch uses. Gentoo can read home??
 cryptsetup -v --iter-time 5000 --type luks2 --hash sha512 --use-random luksFormat "$driveP"3
-cryptsetup -v --iter-time 5000 --type luks2 --hash sha512 --use-random luksFormat "$driveP"6
+#cryptsetup -v --iter-time 5000 --type luks2 --hash sha512 --use-random luksFormat "$driveP"6
 
 #Opening System
 cryptsetup open "$driveP"3 mainSystem
-cryptsetup open "$driveP"6 homePartion
+#cryptsetup open "$driveP"6 homePartion
 
 #Formatting
 mkfs.fat -F32 -n LIUNXEFI "$driveP"1
 mkswap "$driveP"2
 swapon "$driveP"2
 mkfs.btrfs -L MainSystem /dev/mapper/mainSystem 
-mkfs.btrfs -L HomePartion /dev/mapper/homePartion
+#mkfs.btrfs -L HomePartion /dev/mapper/homePartion
 
 #Mounting
 mount -o noatime,nodiratime,compress=zstd:2 /dev/mapper/mainSystem /mnt
 mkdir /mnt/boot
 mkdir /mnt/home
 mount "$driveP"1 /mnt/boot
-mount -o noatime,nodiratime,compress=zstd:4 /dev/mapper/homePartion /mnt/home
+#mount -o noatime,nodiratime,compress=zstd:4 /dev/mapper/homePartion /mnt/home
 
 #Generate Filesystem table
 genfstab -U /mnt > /mnt/etc/fstab
