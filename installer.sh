@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #Constants
-driveP=/dev/nvme0n1p
+driveP=/dev/sda
 hostname=main #CAN THIS BE UPPERCASE???
 username=taha
 wifiP=password
@@ -49,7 +49,7 @@ touch /boot/loader/loader.conf
 touch /boot/loader/entries/arch.conf
 
 UUID3=$(blkid -s UUID -o value "$driveP"3)
-echo -e 'title ArchLinux\n linux /vmlinuz-linux-zen\ninitrd /initramfs-linux-zen.img\n options rd.luks.name='$UUID3':cryptroot root=/dev/mapper/MainSystem rd.luks.options=discard rw loglevel=3' > /boot/loader/entries/arch.conf
+echo -e "title ArchLinux\n linux /vmlinuz-linux-zen\ninitrd /initramfs-linux-zen.img\n options cryptdevice=UUID="$UUID3":mainSystem:allow-discards root=/dev/mapper/mainSystem rw loglevel=3" > /boot/loader/entries/arch.conf
 echo -e "default arch.conf\ntimeout 5\nconsole-mode max\neditor no" >> /boot/loader/loader.conf
 
 bootctl --path=/boot install
