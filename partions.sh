@@ -1,5 +1,8 @@
 #!/bin/sh
 
+###Test to make sure key works
+
+
 #Constants
 drive=/dev/sda
 driveP=/dev/sda
@@ -33,25 +36,46 @@ wipefs -af "$driveP"6
 
 #Only encrypt what arch uses. Gentoo can read home??
 cryptsetup -v --iter-time 5000 --type luks2 --hash sha512 --use-random luksFormat "$driveP"3
-#cryptsetup -v --iter-time 5000 --type luks2 --hash sha512 --use-random luksFormat "$driveP"6
+cryptsetup -v --iter-time 5000 --type luks2 --hash sha512 --use-random luksFormat "$driveP"6
 
 #Opening System
 cryptsetup open "$driveP"3 mainSystem
-#cryptsetup open "$driveP"6 homePartion
+cryptsetup open "$driveP"6 homePartion
 
 #Formatting
 mkfs.fat -F32 -n LIUNXEFI "$driveP"1
 mkswap "$driveP"2
 swapon "$driveP"2
 mkfs.btrfs -L MainSystem /dev/mapper/mainSystem 
-#mkfs.btrfs -L HomePartion /dev/mapper/homePartion
+mkfs.btrfs -L HomePartion /dev/mapper/homePartion
+#mkfs.btrfs -L HomePartion "$driveP"6
+
+
+#Making BTRFS subvolumes
+mount /dev/mapper/homePartion /mnt
+#btrfs subvolume create /mnt/@home # I do not really care about my entire home.
+btrfs subvolume create /mnt/@development
+btrfs subvolume create /mnt/@configuration
+btrfs subvolume create /mnt/@teaching
+btrfs subvolume create /mnt/@school
+btrfs subvolume create /mnt/@research
+btrfs subvolume create /mnt/@documents
+umount /mnt
 
 #Mounting
 mount -o noatime,nodiratime,compress=zstd:2 /dev/mapper/mainSystem /mnt
 mkdir /mnt/boot
 mkdir /mnt/home
+mkdir /mnt/home/{development,configuration,teaching,school,research,documents}
 mount "$driveP"1 /mnt/boot
-#mount -o noatime,nodiratime,compress=zstd:4 /dev/mapper/homePartion /mnt/home
+mount -o noatime,nodiratime,compress=zstd:4,subvol=@home            /dev/mapper/homePartion /mnt/home
+mount -o noatime,nodiratime,compress=zstd:4,subvol=@development     /dev/mapper/homePartion /mnt/home/development
+mount -o noatime,nodiratime,compress=zstd:4,subvol=@configuration   /dev/mapper/homePartion /mnt/home/configuration
+mount -o noatime,nodiratime,compress=zstd:4,subvol=@teaching        /dev/mapper/homePartion /mnt/home/teaching
+mount -o noatime,nodiratime,compress=zstd:4,subvol=@school          /dev/mapper/homePartion /mnt/home/school
+mount -o noatime,nodiratime,compress=zstd:4,subvol=@research        /dev/mapper/homePartion /mnt/home/research
+mount -o noatime,nodiratime,compress=zstd:4,subvol=@documents       /dev/mapper/homePartion /mnt/home/documents
+
 
 #Generate Filesystem table
 genfstab -U /mnt > /mnt/etc/fstab
@@ -59,5 +83,7 @@ genfstab -U /mnt > /mnt/etc/fstab
 #Entering the new system
 pacstrap /mnt base linux-zen linux-zen-headers linux-firmware intel-ucode 
 
-cp install.sh /mnt
+#Getting ready for stage two
+cp installer.sh /mnt
+cp user.sh /mnt
 arch-chroot /mnt
