@@ -1,16 +1,12 @@
 #!/bin/sh
 
-#This is to create the basic system settings and anything I need for root. 
-
 #Constants
-driveP=/dev/sda
 hostname=main #CAN THIS BE UPPERCASE???
-wifiP=password
-wifiU=username
+username=endo
 
 
 #Installing none essential software for basic opperation
-pacman -S --noconfirm nano doas zsh
+pacman -S --noconfirm plasma kde-applications kde-utilities kde-education kde-graphics kde-games kde-system kde-pim kdesdk kde-accessibility kde-network sddm pulseaudio vtk eigen cmake utf8cpp unzip liblas fmt code cura boost alacritty freecad jdk11-openjdk libreoffice-fresh pavucontrol qbittorrent zathura zip firefox git base-devel grub efibootmgr networkmanager nm-connection-editor network-manager-applet nano doas zsh sudo
 
 
 #Language time, etc.
@@ -25,7 +21,6 @@ chsh -s /bin/zsh
 
 #internet stuff
 echo -e "127.0.0.1 localhost\n::1 localhost\n127.0.1.1 "$hostname".localdomain "$hostname >> /etc/hosts
-pacman -S --noconfirm networkmanager nm-connection-editor network-manager-applet
 systemctl enable NetworkManager.service
 
 
@@ -35,7 +30,6 @@ passwd
 
 
 #User Password
-username=endo
 useradd -m -g users -G wheel "$username"
 passwd "$username"
 
@@ -54,28 +48,16 @@ echo -e "MODULES=(btrfs)\nBINARIES=()\nFILES=()\nHOOKS=(base udev autodetect mod
 mkinitcpio -p
 
 #Installing Grub
-paru -S grub efibootmgr
 grub-install --target=x86_64-efi --bootloader-id=GRUB --efi-directory=/boot
 grub-mkconfig -o /boot/grub/grub.cfg
 
 
-#Installing Paru to install software 
-pacman -S --needed --asdeps base-devel git 
-mkdir temp
-cd temp
-git clone https://aru.archLinux.org/paru.git
-cd paru
-makepkg -si 
-#Base Devel
-paru -S --no-confirm base-devel-meta 
-
-
-#Installing Desktop enviroment
-pacman -S --noconfirm plasma sddm pulseaudio
 systemctl enable sddm
 
-#Installing The needed things for VTK
-pacman -S vtk eigen cmake utf8cpp unzip liblas fmt code cura boost alacritty freecad jdk11-openjdk libreoffice-fresh pavucontrol qbittorrent ranger zathura zip 
+git clone https://TahaAbbasi-Hashemi/EndovascularSurgery
+
+
+echo "YOU NEED TO EDIT SUDOERS YOURSELF TO LET YOU BE ROOT"
 
 
 

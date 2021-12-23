@@ -1,13 +1,8 @@
 #!/bin/sh
 
-###Test to make sure key works
-
-
 #Constants
 drive=/dev/sda
 driveP=/dev/sda
-hostname=main #CAN THIS BE UPPERCASE???
-username=endo
 mainSysName=System
 
 #Clearing Current System
@@ -38,13 +33,15 @@ mount "$driveP"3 /mnt
 mkdir /mnt/boot
 mount "$driveP"1 /mnt/boot
 
-#Generate Filesystem table
-genfstab -U /mnt > /mnt/etc/fstab
 
 #Entering the new system
 pacstrap /mnt base linux-zen linux-zen-headers linux-firmware intel-ucode 
 
+#Generate Filesystem table
+genfstab -U /mnt > /mnt/etc/fstab
+
 #Getting ready for stage two
 cp ENDO_installer.sh /mnt
-#cp user.sh /mnt
+
+#Enter /mnt
 arch-chroot /mnt
