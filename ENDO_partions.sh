@@ -19,7 +19,7 @@ sgdisk --mbrtogpt "$drive"
 #Making Drives (Change size in real run)
 sgdisk --new 1::+512M --typecode 1:ef00 --change-name 1:"EFI-Boot" "$drive"
 sgdisk --new 2::+10G --typecode 2:8200 --change-name 2:"System-Swap" "$drive"
-sgdisk --new 3::: --typecode 6:8300 --change-name 6:"System" "$drive"
+sgdisk --new 3::: --typecode 6:8300 --change-name 3:"System" "$drive"
 partprobe $DRIVE #Saves Changes. 
 
 
