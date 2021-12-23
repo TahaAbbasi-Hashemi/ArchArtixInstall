@@ -22,7 +22,7 @@ useradd -m -g users -G wheel "$username"
 passwd "$username"
 
 #Installation
-pacman -S --noconfirm plasma kde-applications kde-utilities kde-education kde-graphics kde-games kde-system kde-pim kdesdk kde-accessibility kde-network sddm pulseaudio vtk eigen cmake utf8cpp unzip liblas fmt code cura boost alacritty freecad jdk11-openjdk libreoffice-fresh pavucontrol qbittorrent zathura zip firefox git base-devel grub efibootmgr networkmanager nm-connection-editor network-manager-applet nano doas zsh sudo
+pacman -S --noconfirm plasma kde-applications kde-utilities kde-education kde-graphics kde-games kde-system kde-pim kdesdk kde-accessibility kde-network sddm pulseaudio vtk eigen cmake utf8cpp unzip liblas fmt code cura boost alacritty freecad jdk11-openjdk libreoffice-fresh pavucontrol qbittorrent zathura zip firefox git base-devel grub efibootmgr networkmanager nm-connection-editor network-manager-applet nano doas zsh sudo gnuplot graphviz python python-mpi4py python-matplotlib openmpi qt5-x11extras qt5-webkit tk adios2 cgns ffmpeg gdal gl2ps glew hdf5 jsoncpp libarchive libharu liblas lz4 netcdf openimagedenoise openvdb openvr ospray pdal postgresql pugixml proj sqlite unixodbc 
 
 #Enabling software
 systemctl enable NetworkManager.service
