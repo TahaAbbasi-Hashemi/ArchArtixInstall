@@ -39,12 +39,12 @@ mkdir /mnt/boot
 mount "$driveP"1 /mnt/boot
 
 #Generate Filesystem table
-#genfstab -U /mnt > /mnt/etc/fstab
+genfstab -U /mnt > /mnt/etc/fstab
 
 #Entering the new system
-#pacstrap /mnt base linux-zen linux-zen-headers linux-firmware intel-ucode 
+pacstrap /mnt base linux-zen linux-zen-headers linux-firmware intel-ucode 
 
 #Getting ready for stage two
-#cp installer.sh /mnt
+cp ENDO_installer.sh /mnt
 #cp user.sh /mnt
-#arch-chroot /mnt
+arch-chroot /mnt
