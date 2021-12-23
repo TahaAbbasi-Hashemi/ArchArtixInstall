@@ -8,8 +8,6 @@ drive=/dev/sda
 driveP=/dev/sda
 hostname=main #CAN THIS BE UPPERCASE???
 username=endo
-wifiP=password
-wifiU=username
 mainSysName=System
 
 #Clearing Current System
@@ -32,24 +30,21 @@ wipefs -af "$driveP"3
 mkfs.fat -F32 -n LIUNXEFI "$driveP"1
 mkswap "$driveP"2
 swapon "$driveP"2
-mkfs.btrfs -L System "$driveP"3
-#mkfs.btrfs -L HomePartion "$driveP"6
+mkfs.ext4 "$driveP"3
 
-
-#Making BTRFS subvolumes
 
 #Mounting
-mount -o noatime,nodiratime,compress=zstd:2 "$driveP"3 /mnt
+mount "$driveP"3 /mnt
 mkdir /mnt/boot
 mount "$driveP"1 /mnt/boot
 
 #Generate Filesystem table
-genfstab -U /mnt > /mnt/etc/fstab
+#genfstab -U /mnt > /mnt/etc/fstab
 
 #Entering the new system
-pacstrap /mnt base linux-zen linux-zen-headers linux-firmware intel-ucode 
+#pacstrap /mnt base linux-zen linux-zen-headers linux-firmware intel-ucode 
 
 #Getting ready for stage two
-cp installer.sh /mnt
-cp user.sh /mnt
-arch-chroot /mnt
+#cp installer.sh /mnt
+#cp user.sh /mnt
+#arch-chroot /mnt
