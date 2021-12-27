@@ -78,7 +78,7 @@ mount -o noatime,nodiratime,compress=zstd:4 "$driveP"6 /mnt/home
 
 
 #Entering the new system
-basestrap /mnt base runnit elogid-runnit runit elogind-runit linux-zen linux-zen-headers linux-firmware intel-ucode 
+basestrap /mnt base runit elogind-runit linux-zen linux-zen-headers linux-firmware intel-ucode 
 fstabgen -U /mnt > /mnt/etc/fstab
 artix-chroot /mnt
 
