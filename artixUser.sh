@@ -41,6 +41,9 @@ ln -s /etc/runit/sv/connmand /etc/runit/runsvdir/default
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=grub
 grub-mkconfig -o /boot/grub/grub.cfg
 
+#EDIT GRUB CONFIGURATION
+echo -e "GRUB_DEFAULT=0\nGRUB_TIMEOUT=5\nGRUB_DISTRIBUTOR='Arch'\nGRUB_CMDLINE_LINUX_DEFAULT='loglevel=3'\nGRUB_CMDLINE_LINUX=''\nGRUB_ENABLE_CRYPTODISK=y\nGRUB_TIMEOUT_STYLE=menu\nGRUB_TERMINAL_INPUT=console\n#GRUB_TERMINAL_OUTPUT=console\nGRUB_GFXMODE=auto\nGRUB_GFXPAYLOAD_LINUX=keep\n#GRUB_DISABLE_LINUX_UUID=true\nGRUB_DISABLE_RECOVERY=true\nGRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
+
 #Make sure sudo is installed.
 #exit
 #reboot now
