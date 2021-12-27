@@ -10,7 +10,7 @@ wifiP=password
 wifiU=username
 
 #For artix only
-pacman -S --nocomfirm gptfdisk #To get sgdisk
+pacman -S --noconfirm gptfdisk #To get sgdisk
 
 #Clearing Current System
 sgdisk --zap-all "$drive"
