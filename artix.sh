@@ -44,7 +44,7 @@ mkswap "$driveP"2
 swapon "$driveP"2
 #mkfs.btrfs -L MainSystem /dev/mapper/mainSystem 
 #mkfs.btrfs -L HomePartion /dev/mapper/homePartion
-mkfs.btrfs -L MainSystem "$driveP"6
+mkfs.btrfs -L MainSystem "$driveP"3
 mkfs.btrfs -L HomePartion "$driveP"6
 
 
