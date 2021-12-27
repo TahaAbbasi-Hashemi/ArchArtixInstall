@@ -83,8 +83,19 @@ fstabgen -U /mnt > /mnt/etc/fstab
 artix-chroot /mnt
 
 
+
+drive=/dev/sda
+driveP=/dev/sda
+mainSysName=mainSystem
+hostname=mainsystem
+username=taha
+wifiP=password
+wifiU=username
+
+
 #Basic configuration
-pacman -S --noconfirm nano doas snapper
+pacman -S --noconfirm nano doas snapper zsh wpa_supplicant dhcpcd grub connman-runit
+pacman -S --noconfirm --asdeps os-prober efibootmgr
 #Language time, etc.
 ln -sf /urs/share/zoneinfo/America/Toronto /etc/localtime
 hwclock --systohc
@@ -93,10 +104,8 @@ locale-gen
 echo "LANG=en_CA.UTF-8\nLANGUAGE=en_CA\nLC_ALL=c" >> /etc/locale.conf #Move this to .zsh
 echo $hostname >> /etc/hostname
 #Shell
-pacman -S --nocomfirm zsh
 chsh -s /bin/zsh
 #Internet
-pacman -S --nocomfirm wpa_supplicant dhcpcd
 echo -e "127.0.0.1 localhost\n::1 localhost\n127.0.1.1 "$hostname".localdomain "$hostname >> /etc/hosts
 #mkdir /etc/wpa_supplicant
 #touch /etc/wpa_supplicant/wpa_supplicant-wlp5s0.conf
@@ -109,12 +118,9 @@ useradd -m -g users -G wheel "$username"
 passwd "$username"
 
 #IDK TRY CONNMAN
-pacman -S connman-runit connman-gtk
 ln -s /etc/runit/sv/connmand /etc/runit/runsvdir/default
 
 #Boot loader
-pacman -S --nocomfirm grub
-pacman -S --asdeps os-prober efibootmgr
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=grub
 grub-mkconfig -o /boot/grub/grub.cfg
 
