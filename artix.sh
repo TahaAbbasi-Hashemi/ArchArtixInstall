@@ -9,6 +9,8 @@ username=taha
 wifiP=password
 wifiU=username
 
+#For artix only
+pacman -S --nocomfirm gptfdisk #To get sgdisk
 
 #Clearing Current System
 sgdisk --zap-all "$drive"
@@ -28,20 +30,22 @@ wipefs -af "$driveP"5
 wipefs -af "$driveP"6
 
 
-#Encrypting
-cryptsetup -v --iter-time 5000 --type luks2 --hash sha512 --use-random luksFormat "$driveP"3
-cryptsetup -v --iter-time 5000 --type luks2 --hash sha512 --use-random luksFormat "$driveP"6
-cryptsetup open "$driveP"3 mainSystem
-cryptsetup open "$driveP"6 homePartion
+#Encrypting 
+# For some reason -v doesnt work.
+#cryptsetup --iter-time 5000 --type luks2 --hash sha512 --use-random luksFormat "$driveP"3
+#cryptsetup --iter-time 5000 --type luks2 --hash sha512 --use-random luksFormat "$driveP"6
+#cryptsetup open "$driveP"3 mainSystem
+#cryptsetup open "$driveP"6 homePartion
 
 
 #Formatting
 mkfs.fat -F32 -n LIUNXEFI "$driveP"1
 mkswap "$driveP"2
 swapon "$driveP"2
-mkfs.btrfs -L MainSystem /dev/mapper/mainSystem 
-mkfs.btrfs -L HomePartion /dev/mapper/homePartion
-#mkfs.btrfs -L HomePartion "$driveP"6
+#mkfs.btrfs -L MainSystem /dev/mapper/mainSystem 
+#mkfs.btrfs -L HomePartion /dev/mapper/homePartion
+mkfs.btrfs -L MainSystem "$driveP"6
+mkfs.btrfs -L HomePartion "$driveP"6
 
 
 #BTRFS subsystems
@@ -56,12 +60,15 @@ mkfs.btrfs -L HomePartion /dev/mapper/homePartion
 
 
 #Mounting
-mount -o noatime,nodiratime,compress=zstd:2 /dev/mapper/mainSystem /mnt
+mount -o noatime,nodiratime,compress=zstd:2 "$driveP"3 /mnt
+#mount -o noatime,nodiratime,compress=zstd:2 /dev/mapper/mainSystem /mnt
 mkdir /mnt/boot
 mkdir /mnt/home
-#mkdir /mnt/home/{development,configuration,teaching,school,research,documents}
 mount "$driveP"1 /mnt/boot
-mount -o noatime,nodiratime,compress=zstd:4            /dev/mapper/homePartion /mnt/home
+mount -o noatime,nodiratime,compress=zstd:4 "$driveP"6 /mnt/home
+#mount -o noatime,nodiratime,compress=zstd:4 /dev/mapper/homePartion /mnt/home
+
+
 #mount -o noatime,nodiratime,compress=zstd:4,subvol=@development     /dev/mapper/homePartion /mnt/home/development
 #mount -o noatime,nodiratime,compress=zstd:4,subvol=@configuration   /dev/mapper/homePartion /mnt/home/configuration
 #mount -o noatime,nodiratime,compress=zstd:4,subvol=@teaching        /dev/mapper/homePartion /mnt/home/teaching
@@ -71,8 +78,8 @@ mount -o noatime,nodiratime,compress=zstd:4            /dev/mapper/homePartion /
 
 
 #Entering the new system
-pacstrap /mnt base openrc elogid-openrc linux-zen linux-zen-headers linux-firmware intel-ucode 
-genfstab -U /mnt > /mnt/etc/fstab
+basestrap /mnt base runnit elogid-runnit runit elogind-runit linux-zen linux-zen-headers linux-firmware intel-ucode 
+fstabgen -U /mnt > /mnt/etc/fstab
 artix-chroot /mnt
 
 
@@ -91,16 +98,19 @@ chsh -s /bin/zsh
 #Internet
 pacman -S --nocomfirm wpa_supplicant dhcpcd
 echo -e "127.0.0.1 localhost\n::1 localhost\n127.0.1.1 "$hostname".localdomain "$hostname >> /etc/hosts
-mkdir /etc/wpa_supplicant
-touch /etc/wpa_supplicant/wpa_supplicant-wlp5s0.conf
-echo -e "ctrl_interface=/run/wpa_supplicant\nupdate_config=1\nupdate_config\nnetwork={\n    ssid='$wifiU'\n    psk='$wifiP'\n}"> /etc/wpa_supplicant/wpa_supplicant-wlp5s0.conf
-cp -r /etc/runit/sv/dhcpcd /etc/runit/sv/dhcpcd-enp3s0 #Runnit
+#mkdir /etc/wpa_supplicant
+#touch /etc/wpa_supplicant/wpa_supplicant-wlp5s0.conf
+#echo -e "ctrl_interface=/run/wpa_supplicant\nupdate_config=1\nupdate_config\nnetwork={\n    ssid='$wifiU'\n    psk='$wifiP'\n}"> /etc/wpa_supplicant/wpa_supplicant-wlp5s0.conf
+#cp -r /etc/runit/sv/dhcpcd /etc/runit/sv/dhcpcd-enp3s0 #Runnit
 #Passwords
 echo "ROOT PASSWORD"
 passwd
 useradd -m -g users -G wheel "$username"
 passwd "$username"
 
+#IDK TRY CONNMAN
+pacman -S connman-runit connman-gtk
+ln -s /etc/runit/sv/connmand /etc/runit/runsvdir/default
 
 #Boot loader
 pacman -S --nocomfirm grub
