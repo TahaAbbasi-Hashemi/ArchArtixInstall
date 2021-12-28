@@ -32,20 +32,20 @@ wipefs -af "$driveP"6
 
 #Encrypting 
 # For some reason -v doesnt work.
-cryptsetup --iter-time 5000 --type luks2 --hash sha512 --use-random luksFormat "$driveP"3
-cryptsetup --iter-time 5000 --type luks2 --hash sha512 --use-random luksFormat "$driveP"6
-cryptsetup open "$driveP"3 mainSystem
-cryptsetup open "$driveP"6 homePartion
+#cryptsetup --iter-time 5000 --type luks2 --hash sha512 --use-random luksFormat "$driveP"3
+#cryptsetup --iter-time 5000 --type luks2 --hash sha512 --use-random luksFormat "$driveP"6
+#cryptsetup open "$driveP"3 mainSystem
+#cryptsetup open "$driveP"6 homePartion
 
 
 #Formatting
 mkfs.fat -F32 -n LIUNXEFI "$driveP"1
 mkswap "$driveP"2
 swapon "$driveP"2
-mkfs.btrfs -L MainSystem /dev/mapper/mainSystem 
-mkfs.btrfs -L HomePartion /dev/mapper/homePartion
-#mkfs.btrfs -L MainSystem "$driveP"3
-#mkfs.btrfs -L HomePartion "$driveP"6
+#mkfs.btrfs -L MainSystem /dev/mapper/mainSystem 
+#mkfs.btrfs -L HomePartion /dev/mapper/homePartion
+mkfs.btrfs -L MainSystem "$driveP"3
+mkfs.btrfs -L HomePartion "$driveP"6
 
 
 #BTRFS subsystems
@@ -60,13 +60,13 @@ mkfs.btrfs -L HomePartion /dev/mapper/homePartion
 
 
 #Mounting
-#mount -o noatime,nodiratime,compress=zstd:2 "$driveP"3 /mnt
-mount -o noatime,nodiratime,compress=zstd:2 /dev/mapper/mainSystem /mnt
+mount -o noatime,nodiratime,compress=zstd:2 "$driveP"3 /mnt
+#mount -o noatime,nodiratime,compress=zstd:2 /dev/mapper/mainSystem /mnt
 mkdir /mnt/boot
 mkdir /mnt/home
 mount "$driveP"1 /mnt/boot
-#mount -o noatime,nodiratime,compress=zstd:4 "$driveP"6 /mnt/home
-mount -o noatime,nodiratime,compress=zstd:4 /dev/mapper/homePartion /mnt/home
+mount -o noatime,nodiratime,compress=zstd:4 "$driveP"6 /mnt/home
+#mount -o noatime,nodiratime,compress=zstd:4 /dev/mapper/homePartion /mnt/home
 
 
 #mount -o noatime,nodiratime,compress=zstd:4,subvol=@development     /dev/mapper/homePartion /mnt/home/development
