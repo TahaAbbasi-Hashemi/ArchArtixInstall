@@ -11,7 +11,7 @@ wifiU=username
 
 
 #Basic configuration
-pacman -S --noconfirm nano doas snapper zsh wpa_supplicant dhcpcd grub connman-runit
+pacman -S --noconfirm nano doas snapper zsh wpa_supplicant dhcpcd grub
 pacman -S --noconfirm --asdeps os-prober efibootmgr
 #Language time, etc.
 ln -sf /urs/share/zoneinfo/America/Toronto /etc/localtime
