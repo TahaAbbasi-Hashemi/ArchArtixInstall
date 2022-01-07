@@ -46,7 +46,8 @@ cryptsetup open "$driveP"7 $par4
 mkfs.fat -F32 -n LIUNXEFI "$driveP"1
 mkswap "$driveP"2
 swapon "$driveP"2
-mkfs.ext4 -L $par1 /dev/mapper/$par1
+mkfs.ext4 "$driveP"3
+mkfs.btrfs -L $par1 /dev/mapper/$par1
 mkfs.btrfs -L $par2 /dev/mapper/$par2
 mkfs.btrfs -L $par3 /dev/mapper/$par3
 mkfs.btrfs -L $par4 /dev/mapper/$par4
@@ -65,7 +66,7 @@ cryptsetup close $par4
 
 
 #Mountint the boot system
-mount /dev/mapper/$par3 /mnt
+mount "$driveP"3 /mnt
 mkdir /mnt/boot
 mount "$driveP"1 /mnt/boot
 
