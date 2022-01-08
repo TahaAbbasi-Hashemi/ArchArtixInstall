@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #Constants
-driveP=/dev/sda3
+driveP=sda3
 hostname=bootsys
 wifiP=password
 wifiU=username
