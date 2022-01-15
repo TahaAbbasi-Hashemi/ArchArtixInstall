@@ -1,6 +1,7 @@
 #!/bin/sh
 
 #Constants
+drive=sda
 driveP=sda3
 hostname=bootsys
 wifiP=password
@@ -43,13 +44,27 @@ mkdir /boot/loader
 mkdir /boot/loader/entries
 touch /boot/loader/loader.conf
 touch /boot/loader/entries/"$hostname".conf
+
+
+#Boot drive
 UUID=$(lsblk -o NAME,UUID | grep "$driveP" | awk '{print $2}')
-echo -e "title "$hostname"_linux\n linux /vmlinuz-linux\ninitrd /initramfs-linux.img\n options root="$UUID" rw loglevel=3" > /boot/loader/entries/"$hostname".conf
-echo -e "timeout 5\nconsole-mode max\neditor no" >> /boot/loader/loader.conf
+echo -e "title "$hostname"_hardened\n linux /vmlinuz-linux-hardened\ninitrd /initramfs-linux-hardened.img\n options root=UUID="$UUID" rw loglevel=3" > /boot/loader/entries/"$hostname".conf
+echo -e "timeout 25\nconsole-mode max\neditor no" >> /boot/loader/loader.conf
+
+#Non boot systems
+hostnames="main sub spare"
+for i in{4..6}
+do
+    driveP="drive""i"
+    UUID=$(lsblk -o NAME,UUID | grep $driveP | awk '{print $2}')
+    host=$(echo -n $hostnames | awk '{print $'$i'}')a
+
+    touch /boot/loader/entries/"$host".conf
+    echo -e 'title '$hostname'_hardened \nlinux /vmlinuz-linux-hardened \ninitrd /initramfs-linux-hardened.img \noptions cryptdevice=UUID='$UUID':'$hostname':allow-discards root=/dev/mapper/'$hostname'rw loglevel=3' >> /boot/loader/"$host".conf
+done
 
 systemd-machine-id-setup
 bootctl --path=/boot install
-
 
 cat /boot/loader/entries/arch.conf
 

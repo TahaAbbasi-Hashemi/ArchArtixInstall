@@ -1,9 +1,9 @@
 #!/bin/sh
 
 #Constants
-driveP=/dev/sda4
-hostname=mainsys
-hostname2=MainSys
+driveP=/dev/sda5
+hostname=subsys
+hostname2=SubSys
 wifiP=password
 wifiU=username
 
@@ -35,6 +35,7 @@ echo -e "ctrl_interface=/run/wpa_supplicant\nupdate_config=1\nupdate_config\nnet
 echo "ROOT PASSWORD"
 passwd
 useradd -m -g users -G wheel "$username"
+passwd $username
 
 
 #mkinitcpio
@@ -45,4 +46,4 @@ mkinitcpio -p
 #Bootloader
 touch /boot/loader/entries/"$hostname2".conf
 UUID=$(lsblk -o NAME,UUID | grep "$driveP" | awk '{print $2}')
-echo -e "title "$hostname"_linuxzen\n linux /vmlinuz-linux-zen\ninitrd /initramfs-linux-zen.img\n options cryptdevice=UUID="$UUID":"$hostname":allow-discards root=/dev/mapper/"$hostname" rw loglevel=3" > /boot/loader/entries/"$hostname".conf
+echo -e "title "$hostname"_linuxhardened\n linux /vmlinuz-linux-hardened\ninitrd /initramfs-linux-hardened.img\n options cryptdevice=UUID="$UUID":"$hostname":allow-discards root=/dev/mapper/"$hostname" rw loglevel=3" > /boot/loader/entries/"$hostname".conf
