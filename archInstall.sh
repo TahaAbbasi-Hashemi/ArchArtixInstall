@@ -36,7 +36,7 @@ passwd
 
 #mkinitcpio
 echo -e "MODULES=()\nBINARIES=()\nFILES=()\nHOOKS=(base udev autodetect keyboard keymap consolefont modconf block encrypt filesystems fsck)\n" > /etc/mkinitcpio.conf
-mkinitcpio -p
+mkinitcpio -p linux-hardened
 
 
 #Bootloader
@@ -48,13 +48,12 @@ touch /boot/loader/entries/"$hostname".conf
 
 #Boot drive
 UUID=$(lsblk -o NAME,UUID | grep "$driveP" | awk '{print $2}')
-echo -e "title "$hostname"_hardened\n linux /vmlinuz-linux-hardened\ninitrd /initramfs-linux-hardened.img\n options root=UUID="$UUID" rw loglevel=3" > /boot/loader/entries/"$hostname".conf
+echo -e 'title '$hostname'_hardened \nlinux /vmlinuz-linux-hardened \ninitrd /initramfs-linux-hardened.img \noptions cryptdevice=UUID='$UUID':root:allow-discards root=/dev/mapper/root rw loglevel=3' >> /boot/loader/"$host".conf
 echo -e "timeout 25\nconsole-mode max\neditor no" >> /boot/loader/loader.conf
 
 systemd-machine-id-setup
 bootctl --path=/boot install
 
-cat /boot/loader/entries/arch.conf
 
 
 
