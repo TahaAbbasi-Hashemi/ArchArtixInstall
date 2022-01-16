@@ -15,7 +15,7 @@ sgdisk --zap-all "$drive"
 sgdisk --mbrtogpt "$drive"
 sgdisk --new 1::+2G     --typecode 1:ef00 --change-name 1:"EFI-Boot" "$drive"       
 sgdisk --new 2::+2G     --typecode 2:8200 --change-name 2:"System-Swap" "$drive"
-sgdisk --new 3:::    --typecode 3:8304 --change-name 3:"$par1" "$drive"    
+sgdisk --new 3:::       --typecode 3:8304 --change-name 3:"root" "$drive"    
 partprobe $DRIVE #Saves
 wipefs -af "$driveP"1
 wipefs -af "$driveP"2
@@ -24,8 +24,8 @@ wipefs -af "$driveP"3
 
 #Encrypting 
 # For some reason -v doesnt work.
-cryptsetup -v --iter-time 5000 --type luks2 --hash sha512 --use-random luksFormat "$driveP"3
-cryptsetup open "$driveP"3 $par1
+cryptsetup -v --iter-time 5000 --type luks2 --hash sha512 luksFormat /dev/sda3
+cryptsetup open /dev/sda3 root
 
 
 #Formatting
