@@ -59,7 +59,7 @@ sleep 10
 pacman -S grub 
 pacman -S --asdeps efibootmgr dosfstools freetype2 fuse2 gptfdisk libisoburn mtools os-prober
 sysUUID=$(blkid -s UUID -o value $driveP"2")
-sed -i "s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=$sysUUID:$cryptname cryptkey=rootfs:\/crypto_keyfile.bin\"/g" /etc/default/grub #I think something wrong with this line. I am not sure. 
+sed -i "s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=$sysUUID:$volname cryptkey=rootfs:\/crypto_keyfile.bin\"/g" /etc/default/grub #I think something wrong with this line. I am not sure. 
 sed -i "s/#GRUB_ENABLE_CRYPTODISK/GRUB_ENABLE_CRYPTODISK/g" /etc/default/grub
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=$hostname --recheck $drive
 grub-mkconfig -o /boot/grub/grub.cfg
