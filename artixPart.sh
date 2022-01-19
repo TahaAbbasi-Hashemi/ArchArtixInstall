@@ -39,30 +39,31 @@ lvcreate -L 1G $volname -n snap
 echo -e "\n \n \nFORMATING"
 sleep 10
 mkfs.fat -F32 -n LIUNXEFI $driveP"1"
-mkswap /dev/$volname/swap
-swapon /dev/$vouname/swap
-mkfs.btrfs -q -L ROOT /dev/$volname/root
-mkfs.btrfs -q -L ETC /dev/$volname/etc
-mkfs.btrfs -q -L VAR /dev/$volname/var
-mkfs.btrfs -q -L USR /dev/$volname/usr
-mkfs.btrfs -q -L HOME /dev/$volname/home
-mkfs.btrfs -q -L SNAP /dev/$volname/snap
+mkswap /dev/mapper/$volname-swap
+swapon /dev/mapper/$vouname-swap
+
+mkfs.btrfs -q -L ROOT /dev/mapper/$volname-root
+mkfs.btrfs -q -L ETC /dev/mapper/$volname-etc
+mkfs.btrfs -q -L VAR /dev/mapper/$volname-var
+mkfs.btrfs -q -L USR /dev/mapper/$volname-usr
+mkfs.btrfs -q -L HOME /dev/mapper/$volname-home
+mkfs.btrfs -q -L SNAP /dev/mapper/$volname-snap
 
 
 #Mounting
 echo -e "\n\n\nMOUNTING"
 sleep 10
-mount -o noatime,nodiratime,compress=zstd:4 /dev/$volname/root /mnt
+mount -o noatime,nodiratime,compress=zstd:4 /dev/mapper/$volname/root /mnt
 mkdir /mnt/{boot,etc,var,usr,home,snap}
-mount -o noatime,nodiratime,compress=zstd:4 /dev/$volname/etc /mnt/etc
-mount -o noatime,nodiratime,compress=zstd:4 /dev/$volname/var /mnt/var
-mount -o noatime,nodiratime,compress=zstd:2 /dev/$volname/usr /mnt/usr
-mount -o noatime,nodiratime,compress=zstd:2 /dev/$volname/home /mnt/home
-mount -o noatime,nodiratime,compress=zstd:4 /dev/$volname/snap /mnt/snap
+mount -o noatime,nodiratime,compress=zstd:4 /dev/mapper/$volname-etc /mnt/etc
+mount -o noatime,nodiratime,compress=zstd:4 /dev/mapper/$volname-var /mnt/var
+mount -o noatime,nodiratime,compress=zstd:2 /dev/mapper/$volname-usr /mnt/usr
+mount -o noatime,nodiratime,compress=zstd:2 /dev/mapper/$volname-home /mnt/home
+mount -o noatime,nodiratime,compress=zstd:4 /dev/mapper/$volname-snap /mnt/snap
 mount $driveP"1" /mnt/boot
 
 #Entering the new system
-basestrap -i /mnt base runit elogind-runit linux-hardened linux-hardened-headers linux-firmware intel-ucode 
+basestrap -i /mnt base btrfs-progs elogind-runit linux-hardened linux-hardened-headers linux-firmware intel-ucode 
 fstabgen -U /mnt > /mnt/etc/fstab
 echo "tmpfs	/tmp	tmpfs	rw,nosuid,noatime,nodev	0 0" >> /mnt/etc/fstab
 
