@@ -14,7 +14,7 @@ sgdisk --zap-all "$drive"
 sgdisk --mbrtogpt "$drive"
 sgdisk --new 1::+512M   --typecode 1:ef00 --change-name 1:"BOOT" "$drive"
 sgdisk --new 2:::       --typecode 2:8304 --change-name 2:"SYS"   "$drive"
-partprobe $DRIVE #Saves
+partprobe $drive #Saves
 wipefs -af $driveP"1"
 wipefs -af $driveP"2"
 
