@@ -26,9 +26,8 @@ echo -e "127.0.0.1 localhost\n::1 localhost\n127.0.1.1 "$hostname".localdomain "
 chsh -s /bin/zsh
 
 
-#internet stuff
-touch /etc/wpa_supplicant/wpa_supplicant-wlp5s0.conf
-wpa_passphrase "$wifeUser" "$wifiPass" > /etc/wpa_supplicant/wpa_supplicant.conf
+#INTERNET STUFF
+#wpa_passphrase "$wifeUser" "$wifiPass" > /etc/wpa_supplicant/wpa_supplicant.conf
 #echo -e "ctrl_interface=/run/wpa_supplicant\nupdate_config=1\nupdate_config\nnetwork={\n    ssid='$wifiU'\n    psk='$wifiP'\n}"> /etc/wpa_supplicant/wpa_supplicant-wlp5s0.conf
 ln -s /etc/runit/sv/dhcpcd /run/runit/service
 
