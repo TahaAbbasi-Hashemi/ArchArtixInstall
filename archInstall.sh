@@ -68,6 +68,7 @@ sleep 10
 ln -s /etc/runit/sv/cronie /run/runit/service
 ln -s /etc/runit/sv/haveged /run/runit/service
 
+exit
 
 
 
