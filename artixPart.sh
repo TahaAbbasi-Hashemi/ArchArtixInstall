@@ -57,6 +57,7 @@ mount $driveP"1" /mnt/efi
 
 #Entering the new system
 basestrap /mnt base runit elogind-runit linux-zen linux-zen-headers linux-firmware intel-ucode 
+
 fstabgen -U /mnt > /mnt/etc/fstab
 echo "tmpfs	/tmp	tmpfs	rw,nosuid,noatime,nodev	0 0" >> /mnt/etc/fstab
 

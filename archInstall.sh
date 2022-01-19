@@ -58,7 +58,7 @@ pacman -S --asdeps efibootmgr dosfstools freetype2 fuse2 gptfdisk libisoburn mto
 swapUUID=$(blkid -s UUID -o value /dev/$volname/swap)
 #sed -i "s/quiet/quiet resume=UUID=$swapUUID/g" /etc/default/grub #Adds hybernation which i dont need for now
 sysUUID=$(blkid -s UUID -o value $driveP"2")
-sed -i "s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=$sysUUID:$cryptname\" net.ifnames=0/g" /etc/default/grub
+sed -i "s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=$sysUUID:$cryptname\"/g" /etc/default/grub
 sed -i "s/#GRUB_ENABLE_CRYPTODISK/GRUB_ENABLE_CRYPTODISK/g" /etc/default/grub
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=$hostname --recheck $drive
     #Adding Features for encryption
