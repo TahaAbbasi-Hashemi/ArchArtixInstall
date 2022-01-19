@@ -13,6 +13,7 @@ wifiUser=username
 
 #Installing none essential software for basic opperation
 pacman -S --noconfirm nano dhcpcd zsh neofetch lvm2 haveged-runit cronie-runit dhcpcd-runit
+pacman -S cryptsetup lvm2
 
 
 #Language time, etc.
