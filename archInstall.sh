@@ -10,7 +10,6 @@ user=taha
 volname=sys
 cryptname=lvmsys
 hostname=beryllium
-cryptFile="/root/crypt.key"
 wifiPass=password
 wifiUser=username
 
@@ -48,21 +47,23 @@ sed -i "s/# %wheel ALL=(ALL) ALL/wheel ALL=(ALL) ALL/g" /etc/sudoers
 #mkinitcpio
 #echo -e "MODULES=()\nBINARIES=()\nFILES=()\nHOOKS=(base udev autodetect keyboard keymap consolefont modconf block encrypt lvm2 filesystems fsck)\n" > /etc/mkinitcpio.conf
 sed -i "s/modconf block/keyboard keymap consolefont modconf block encrypt lvm2/g" /etc/mkinitcpio.conf
-dd if=/dev/random of=$cryptFile bs=512 count=8 iflag=fullblock
-chmod 000 $cryptFile
-sed -i "s/FILES=(/FILES=($cryptFile/g" /etc/mkinitcpio.conf
+dd if=/dev/random of=/crypto_keyfile.bin bs=512 count=8 iflag=fullblock
+chmod 000 /crypto_keyfile.bin
+sed -i "s/FILES=(/FILES=(\/crypto_keyfile.bin/g" /etc/mkinitcpio.conf
 cryptsetup luksAddKey /dev/sda2 /crypto_keyfile.bin
 mkinitcpio -p linux-hardened
+sleep 10
 
 
 #GRUB
 pacman -S grub 
 pacman -S --asdeps efibootmgr dosfstools freetype2 fuse2 gptfdisk libisoburn mtools os-prober
 sysUUID=$(blkid -s UUID -o value $driveP"2")
-sed -i "s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=$sysUUID:$cryptname cryptkey=rootfs:$cryptFile\"/g" /etc/default/grub #I think something wrong with this line. I am not sure. 
+sed -i "s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=$sysUUID:$cryptname cryptkey=rootfs:\/crypto_keyfile.bin\"/g" /etc/default/grub #I think something wrong with this line. I am not sure. 
 sed -i "s/#GRUB_ENABLE_CRYPTODISK/GRUB_ENABLE_CRYPTODISK/g" /etc/default/grub
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=$hostname --recheck $drive
 grub-mkconfig -o /boot/grub/grub.cfg
+sleep 10
     #Adding Features for encryption
 ln -s /etc/runit/sv/cronie /run/runit/service
 ln -s /etc/runit/sv/haveged /run/runit/service

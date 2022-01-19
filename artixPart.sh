@@ -20,6 +20,8 @@ wipefs -af $driveP"2"
 
 
 #Encrypting 
+echo -e "\n \n \nENCRYPTING"
+sleep 10
 cryptsetup -v --type luks2 --hash sha512 luksFormat $driveP"2"
 cryptsetup open $driveP"2" $cryptname
 pvcreate /dev/mapper/$cryptname
@@ -34,6 +36,8 @@ lvcreate -L 1G $volname -n snap
 
 
 #Formatting
+echo -e "\n \n \nFORMATING"
+sleep 10
 mkfs.fat -F32 -n LIUNXEFI $driveP"1"
 mkswap /dev/$volname/swap
 swapon /dev/$vouname/swap
@@ -46,6 +50,8 @@ mkfs.btrfs -q -L SNAP /dev/$volname/snap
 
 
 #Mounting
+echo -e "\n\n\nMOUNTING"
+sleep 10
 mount -o noatime,nodiratime,compress=zstd:4 /dev/$volname/root /mnt
 mkdir /mnt/{boot,etc,var,usr,home,snap}
 mount -o noatime,nodiratime,compress=zstd:4 /dev/$volname/etc /mnt/etc
@@ -57,7 +63,6 @@ mount $driveP"1" /mnt/boot
 
 #Entering the new system
 basestrap -i /mnt base runit elogind-runit linux-hardened linux-hardened-headers linux-firmware intel-ucode 
-
 fstabgen -U /mnt > /mnt/etc/fstab
 echo "tmpfs	/tmp	tmpfs	rw,nosuid,noatime,nodev	0 0" >> /mnt/etc/fstab
 
