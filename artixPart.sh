@@ -40,7 +40,7 @@ echo -e "\n \n \nFORMATING"
 sleep 10
 mkfs.fat -F32 -n LIUNXEFI $driveP"1"
 mkswap /dev/mapper/$volname-swap
-swapon /dev/mapper/$vouname-swap
+swapon /dev/mapper/$volname-swap
 
 mkfs.btrfs -q -L ROOT /dev/mapper/$volname-root
 mkfs.btrfs -q -L ETC /dev/mapper/$volname-etc
@@ -53,7 +53,7 @@ mkfs.btrfs -q -L SNAP /dev/mapper/$volname-snap
 #Mounting
 echo -e "\n\n\nMOUNTING"
 sleep 10
-mount -o noatime,nodiratime,compress=zstd:4 /dev/mapper/$volname/root /mnt
+mount -o noatime,nodiratime,compress=zstd:4 /dev/mapper/$volname-root /mnt
 mkdir /mnt/{boot,etc,var,usr,home,snap}
 mount -o noatime,nodiratime,compress=zstd:4 /dev/mapper/$volname-etc /mnt/etc
 mount -o noatime,nodiratime,compress=zstd:4 /dev/mapper/$volname-var /mnt/var
@@ -66,4 +66,5 @@ mount $driveP"1" /mnt/boot
 basestrap -i /mnt base btrfs-progs elogind-runit linux-hardened linux-hardened-headers linux-firmware intel-ucode 
 fstabgen -U /mnt > /mnt/etc/fstab
 echo "tmpfs	/tmp	tmpfs	rw,nosuid,noatime,nodev	0 0" >> /mnt/etc/fstab
-
+cp archInstall.sh /mnt
+artix-chroot /mnt /bin/bash
