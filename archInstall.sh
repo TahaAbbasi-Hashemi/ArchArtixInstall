@@ -13,7 +13,7 @@ wifiUser=username
 
 #Installing none essential software for basic opperation
 pacman -S --noconfirm nano dhcpcd zsh neofetch lvm2 haveged-runit cronie-runit dhcpcd-runit
-pacman -S cryptsetup lvm2
+pacman -S cryptsetup lvm2 #For MKINITCPIO
 
 
 #Language time, etc.
@@ -38,13 +38,12 @@ echo "ROOT PASSWORD"
 passwd
 useradd -m -G wheel -s /bin/zsh $user
 passwd $user
-sed -i "s/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/g" /etc/sudoers
+sed -i "s/# %wheel ALL=(ALL) ALL/wheel ALL=(ALL) ALL/g" /etc/sudoers
 
 
 #mkinitcpio
-echo -e "MODULES=()\nBINARIES=()\nFILES=()\nHOOKS=(base udev autodetect keyboard keymap consolefont modconf block encrypt lvm2 filesystems fsck)\n" > /etc/mkinitcpio.conf
-#sed -i "s/modconf block/modconf block encrypt lvm2 resume/g" /etc/mkinitcpio.conf
-sed -i "s/modconf block/modconf block encrypt lvm2/g" /etc/mkinitcpio.conf #No resume
+#echo -e "MODULES=()\nBINARIES=()\nFILES=()\nHOOKS=(base udev autodetect keyboard keymap consolefont modconf block encrypt lvm2 filesystems fsck)\n" > /etc/mkinitcpio.conf
+sed -i "s/modconf block/keyboard keymap consolefont modconf block encrypt lvm2/g" /etc/mkinitcpio.conf
 dd if=/dev/random of=/crypto_keyfile.bin bs=512 count=8 iflag=fullblock
 chmod 000 /crypto_keyfile.bin
 sed -i "s/FILES=(/FILES=(\/crypto_keyfile.bin/g" /etc/mkinitcpio.conf
@@ -55,12 +54,11 @@ mkinitcpio -p linux-hardened
 #GRUB
 pacman -S grub 
 pacman -S --asdeps efibootmgr dosfstools freetype2 fuse2 gptfdisk libisoburn mtools os-prober
-swapUUID=$(blkid -s UUID -o value /dev/$volname/swap)
-#sed -i "s/quiet/quiet resume=UUID=$swapUUID/g" /etc/default/grub #Adds hybernation which i dont need for now
 sysUUID=$(blkid -s UUID -o value $driveP"2")
 sed -i "s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=$sysUUID:$cryptname\"/g" /etc/default/grub
 sed -i "s/#GRUB_ENABLE_CRYPTODISK/GRUB_ENABLE_CRYPTODISK/g" /etc/default/grub
 grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=$hostname --recheck $drive
+grub-mkconfig -o /boot/grub/grub.cfg
     #Adding Features for encryption
 ln -s /etc/runit/sv/cronie /run/runit/service
 ln -s /etc/runit/sv/haveged /run/runit/service

@@ -12,8 +12,8 @@ volname=sys
 pacman -S --noconfirm gptfdisk parted #artix only
 sgdisk --zap-all "$drive"
 sgdisk --mbrtogpt "$drive"
-sgdisk --new 1::+512M   --typecode 1:ef00 --change-name 1:"EFI-Boot" "$drive"
-sgdisk --new 2:::       --typecode 2:8304 --change-name 2:"SYSTEM"   "$drive"
+sgdisk --new 1::+512M   --typecode 1:ef00 --change-name 1:"BOOT" "$drive"
+sgdisk --new 2:::       --typecode 2:8304 --change-name 2:"SYS"   "$drive"
 partprobe $DRIVE #Saves
 wipefs -af $driveP"1"
 wipefs -af $driveP"2"
@@ -47,13 +47,13 @@ mkfs.btrfs -q -L SNAP /dev/$volname/snap
 
 #Mounting
 mount -o noatime,nodiratime,compress=zstd:4 /dev/$volname/root /mnt
-mkdir /mnt/{efi,etc,var,usr,home,snap}
+mkdir /mnt/{boot,etc,var,usr,home,snap}
 mount -o noatime,nodiratime,compress=zstd:4 /dev/$volname/etc /mnt/etc
 mount -o noatime,nodiratime,compress=zstd:4 /dev/$volname/var /mnt/var
 mount -o noatime,nodiratime,compress=zstd:2 /dev/$volname/usr /mnt/usr
 mount -o noatime,nodiratime,compress=zstd:2 /dev/$volname/home /mnt/home
 mount -o noatime,nodiratime,compress=zstd:4 /dev/$volname/snap /mnt/snap
-mount $driveP"1" /mnt/efi
+mount $driveP"1" /mnt/boot
 
 #Entering the new system
 basestrap -i /mnt base runit elogind-runit linux-hardened linux-hardened-headers linux-firmware intel-ucode 
