@@ -123,7 +123,7 @@ artix-chroot /mnt bash <<- EOF
     hwclock --systohc
     locale-gen
     pacman -Syu
-    pacman -S --asdeps --noconfirm dosfstools freetype2 fuse2 gptdisk libisoburn mtools os-prober
+    pacman -S --asdeps --noconfirm efibootmgr dosfstools freetype2 fuse2 gptdisk libisoburn mtools os-prober
     pacman-key --populate archlinux
     ln -sfT dash /usr/bin/sh
     mkinitcpio -v -P
@@ -137,7 +137,7 @@ sed -i "s/#GRUB_ENABLE_CRYPTODISK/GRUB_ENABLE_CRYPTODISK/g" /mnt/etc/default/gru
 #sed -i 's/#GRUB_DISABLE_SUB_MENU=y/GRUB_DISABLE_SUB_MENU=y/g' /mnt/etc/default/grub
 echo 'GRUB_DISABLE_OS_PROBER=false' >> /mnt/etc/default/grub
 artix-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
-
+artic-chroot /mnt grub-mkconfig -o /boot/efi/EFI/arch/grub.cfg
 
 echo "We got here now"
 sleep 10
