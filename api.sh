@@ -70,7 +70,7 @@ swapon /dev/mapper/$vn-swap
 
 
 #closing
-swapoff /dev/mapper/$vn-swap
+swapoff -a
 cryptsetup close $cn
 
 
