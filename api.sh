@@ -55,9 +55,7 @@ lvcreate -L 1G $vn -n etc
 lvcreate -L 1G $vn -n swap
 lvcreate -L 1G $vn -n home
 lvcreate -L 1G $vn -n snap
-lvcreate -L 2G $vn -n root
-lvcreate -L 9G $vn -n var
-lvcreate -L 9G $vn -n usr
+lvcreate -L 15G $vn -n root
 vgchange -a y
 
 
@@ -68,9 +66,9 @@ mkswap /dev/mapper/$vn-swap
 swapon /dev/mapper/$vn-swap
 mkfs.btrfs -q -L ROOT /dev/mapper/$vn-root
 mount -o noatime,compress=zstd:2 /dev/mapper/$vn-root /mnt
-for i in {1..5}
+for i in {1..3}
 do
-    lower=$(echo "etc var usr home snap" | awk '{print $'$i'}')
+    lower=$(echo "etc home snap" | awk '{print $'$i'}')
     upper=$(echo $lower | tr "[:lower:]" "[:upper:]")
     mkfs.btrfs -q -L $upper /dev/mapper/$vn-$lower
     mkdir /mnt/$lower
