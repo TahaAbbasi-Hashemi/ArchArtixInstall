@@ -119,6 +119,7 @@ sed -i "s/FILES=(/FILES=(\/root\/crypto.keyfile/g" /mnt/etc/mkinitcpio.conf
 cryptsetup luksAddKey $ps /mnt/root/crypto.keyfile
 
 
+basestarp /mnt efibootmgr
 artix-chroot /mnt bash <<- EOF
     hwclock --systohc
     locale-gen
