@@ -133,8 +133,11 @@ EOF
 
 #Editing GRUB
 sysUUID=$(blkid -s UUID -o value $ps)
+echo $sysUUID
 rep="cryptdevice=UUID=$sysUUID:$vn root=\/dev\/mapper\/$vn cryptkey=rootfs:\/root\/crypto.keyfile"
-sed -i "s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"$rep\"g" /mnt/etc/default/grub
+echo $rep
+sed -i "s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"$rep\"/g" /mnt/etc/default/grub
+cat /mnt/etc/default/grub
 sed -i "s/#GRUB_ENABLE_CRYPTODISK/GRUB_ENABLE_CRYPTODISK/g" /mnt/etc/default/grub
 #sed -i 's/#GRUB_DISABLE_SUB_MENU=y/GRUB_DISABLE_SUB_MENU=y/g' /mnt/etc/default/grub
 echo 'GRUB_DISABLE_OS_PROBER=false' >> /mnt/etc/default/grub
