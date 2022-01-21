@@ -56,8 +56,9 @@ lvcreate -L 1G $vn -n snap
 lvcreate -L 2G $vn -n root
 lvcreate -L 9G $vn -n var
 lvcreate -L 9G $vn -n var
-vgscan
-vgchange -ay
+#vgscan
+#vgchange -ay
+#vgchange -a n
 cryptsetup close $cn
 
 
