@@ -55,12 +55,23 @@ lvcreate -L 1G $vn -n home
 lvcreate -L 1G $vn -n snap
 lvcreate -L 2G $vn -n root
 lvcreate -L 9G $vn -n var
-lvcreate -L 9G $vn -n var
+lvcreate -L 9G $vn -n usr
 vgchange -a n
 cryptsetup close $cn
+cryptsetup open $ps $cn
 
 
 #Formatting
+mkfs.fat -F32 -n LIUNXEFI $pe
+mkswap /dev/mapper/$vn-swap
+swapon /dev/mapper/$vn-swap
+
+
+
+
+#closing
+swapoff /dev/mapper/$vn-swap
+cryptsetup close $cn
 
 
 
