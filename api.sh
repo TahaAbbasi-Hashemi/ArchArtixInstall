@@ -68,10 +68,9 @@ mkswap /dev/mapper/$vn-swap
 swapon /dev/mapper/$vn-swap
 mkfs.btrfs -q -L ROOT /dev/mapper/$vn-root
 mount -o noatime,compress=zstd:2 /dev/mapper/$vn-root /mnt
-folders="etc var usr home snap"
-for i in {0..4}
+for i in {1..5}
 do
-    lower=$(awk '{print $'$i'}' -e $folders)
+    lower=$(echo "etc var usr home snap" | awk '{print $'$i'}')
     upper=$(echo $lower | tr "[:lower:]" "[:upper:]")
     mkfs.btrfs -q -L $upper /dev/mapper/$vn-$lower
     mkdir /mnt/$lower
@@ -86,9 +85,10 @@ mount $pb /mnt/boot
 
 
 #closing
-#swapoff -a
-#vgchange -a n
-#cryptsetup close $cn
+umount -R /mnt
+swapoff -a
+vgchange -a n
+cryptsetup close $cn
 
 
 
