@@ -129,20 +129,21 @@ artix-chroot /mnt bash <<- EOF
     ln -sfT dash /usr/bin/sh
     mkinitcpio -v -P
     grub-install --efi-directory=/boot/efi --target=x86_64-efi --bootloader-id=GRUB
+    grub-mkconfig -o /boot/grub/grub.cfg
 EOF
 
 #Editing GRUB
 sysUUID=$(blkid -s UUID -o value $ps)
-echo $sysUUID
+artix-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 rep="cryptdevice=UUID=$sysUUID:$cn root=\/dev\/mapper\/$cn cryptkey=rootfs:\/root\/crypto.keyfile"
 echo $rep
 sed -i "s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"$rep\"/g" /mnt/etc/default/grub
-cat /mnt/etc/default/grub
+#cat /mnt/etc/default/grub
 sed -i "s/#GRUB_ENABLE_CRYPTODISK/GRUB_ENABLE_CRYPTODISK/g" /mnt/etc/default/grub
 #sed -i 's/#GRUB_DISABLE_SUB_MENU=y/GRUB_DISABLE_SUB_MENU=y/g' /mnt/etc/default/grub
 echo 'GRUB_DISABLE_OS_PROBER=false' >> /mnt/etc/default/grub
 artix-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
-artic-chroot /mnt grub-mkconfig -o /boot/efi/EFI/arch/grub.cfg
+#artix-chroot /mnt grub-mkconfig -o /boot/efi/EFI/arch/grub.cfg
 
 echo "We got here now"
 sleep 10
@@ -154,6 +155,8 @@ sleep 10
 #vgchange -a n
 #cryptsetup close $cn
 
+#Now go into the system and make a the passwd
+#Then close everything
 
 
 
