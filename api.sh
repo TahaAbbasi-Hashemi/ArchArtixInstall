@@ -135,8 +135,8 @@ EOF
 #Editing GRUB
 sysUUID=$(blkid -s UUID -o value $ps)
 artix-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
-#rep="rw cryptdevice=UUID=$sysUUID:$cn root=\/dev\/mapper\/$vn-root cryptkey=rootfs:\/root\/crypto.keyfile"
-rep="cryptdevice=UUID=$sysUUID:$cn root=\/dev\/mapper\/$vn-root"
+rep="cryptdevice=UUID=$sysUUID:$cn root=\/dev\/mapper\/$vn-root cryptkey=rootfs:\/root\/crypto.keyfile"
+#rep="cryptdevice=UUID=$sysUUID:$cn root=\/dev\/mapper\/$vn-root"
 echo $rep
 sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=\"/GRUB_CMDLINE_LINUX_DEFAULT=\"$rep/g" /mnt/etc/default/grub
 #cat /mnt/etc/default/grub
