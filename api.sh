@@ -122,6 +122,8 @@ artix-chroot /mnt bash <<- EOF
     pacman -Syu
     pacman-key --populate archlinux
     ln -sfT dash /usr/bin/sh
+    pacman -S neofetch
+    neofetch
 EOF
 
 
