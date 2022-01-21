@@ -47,7 +47,12 @@ modprobe dm_crypt
 modprobe dm_mod
 cryptsetup -v --iter-time 5000 --type luks2 --hash sha512 luksFormat $ps
 cryptsetup open $ps $cn
+cryptsetup close $cn
+echo "help2"
+
+cryptsetup open $ps $cn
 pvcreate /dev/mapper/$cn
+echo "help3"
 vgcreate $vn /dev/mapper/$cn
 lvcreate -L 1G $vn -n etc
 lvcreate -L 1G $vn -n swap
@@ -57,9 +62,7 @@ lvcreate -L 2G $vn -n root
 lvcreate -L 9G $vn -n var
 lvcreate -L 9G $vn -n usr
 
-vgchange -a n
-cryptsetup close $cn
-cryptsetup open $ps $cn
+#vgchange -a n
 
 
 #Formatting
