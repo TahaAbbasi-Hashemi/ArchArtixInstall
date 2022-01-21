@@ -84,7 +84,7 @@ mount $pe /mnt/boot/efi
 #Entering the new system
 basestrap -i /mnt base elogind-runit
 basestrap -i /mnt linux-zen linux-zen-headers linux-hardened linux-hardened-headers linux-firmware
-basestrap -i /mnt grub btrfs-progs cryptsetup lvm2
+basestrap -i /mnt grub btrfs-progs cryptsetup-runit lvm2-runit
 basestrap -i /mnt haveged-runit cronie-runit dhcpcd-runit artix-archlinux-support
 basestrap -i /mnt zsh dash nano neofetch sudo
 
@@ -133,11 +133,12 @@ EOF
 #Editing GRUB
 sysUUID=$(blkid -s UUID -o value $ps)
 artix-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
-rep="rw cryptdevice=UUID=$sysUUID:$cn root=\/dev\/mapper\/$vn-root cryptkey=rootfs:\/root\/crypto.keyfile"
+#rep="rw cryptdevice=UUID=$sysUUID:$cn root=\/dev\/mapper\/$vn-root cryptkey=rootfs:\/root\/crypto.keyfile"
+rep="cryptdevice=UUID=$sysUUID:$cn"
 echo $rep
-sed -i "s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"$rep\"/g" /mnt/etc/default/grub
+sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=\"/GRUB_CMDLINE_LINUX_DEFAULT=\"$rep\"/g" /mnt/etc/default/grub
 #cat /mnt/etc/default/grub
-sed -i "s/#GRUB_ENABLE_CRYPTODISK/GRUB_ENABLE_CRYPTODISK/g" /mnt/etc/default/grub
+sed -i "s/#GRUB_ENABLE_CRYPTODISK=y;/GRUB_ENABLE_CRYPTODISK=y/g" /mnt/etc/default/grub
 #sed -i 's/#GRUB_DISABLE_SUB_MENU=y/GRUB_DISABLE_SUB_MENU=y/g' /mnt/etc/default/grub
 echo 'GRUB_DISABLE_OS_PROBER=false' >> /mnt/etc/default/grub
 artix-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
