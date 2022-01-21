@@ -56,21 +56,42 @@ lvcreate -L 1G $vn -n snap
 lvcreate -L 2G $vn -n root
 lvcreate -L 9G $vn -n var
 lvcreate -L 9G $vn -n usr
+
 vgchange -a n
 cryptsetup close $cn
 cryptsetup open $ps $cn
 
 
 #Formatting
-mkfs.fat -F32 -n LIUNXEFI $pe
+mkfs.fat -F32 -n BOOT $pb
 mkswap /dev/mapper/$vn-swap
 swapon /dev/mapper/$vn-swap
+mkfs.btrfs -q -L ROOT /dev/mapper/$vn-root
+mount o noatime,compress=zstd:2 /dev/mapper/$vn-root /mnt
+drives="etc var usr home snap"
+for i in {0..4}
+do
+    lower=$(awk '{print $'$i'}' -e $dri)
+    upper=$(echo $lower | tr "[:lower:]" "[:upper:]")
+    mkfs.btrfs -q -L $upper /dev/mapper/$vn-$lower
+    mkdir /mnt/$lower
+    mount -o noatime,compress=zstd:2 /dev/mapper/$vn-$lower /mnt/$lower
+done
+mkdir /mnt/boot
+mount $pb /mnt/boot
+
+lsblk 
+fdisk -l
+sleep 10
+
+
 
 
 
 
 #closing
 swapoff -a
+vgchange -a n
 cryptsetup close $cn
 
 
