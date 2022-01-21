@@ -56,12 +56,14 @@ lvcreate -L 1G $vn -n swap
 lvcreate -L 1G $vn -n home
 lvcreate -L 1G $vn -n snap
 lvcreate -L 15G $vn -n root
+#lvcreate -L 15G $vn -n usr
+#lvcreate -L 15G $vn -n var
 vgchange -a y
 
 
 #Formatting
 mkfs.fat -F32 -n EFI $pe
-mkfs.ext4 -L BOOT $pb
+mkfs.fat -F32 -n BOOT $pb
 mkswap /dev/mapper/$vn-swap
 swapon /dev/mapper/$vn-swap
 mkfs.btrfs -q -L ROOT /dev/mapper/$vn-root
