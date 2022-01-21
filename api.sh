@@ -33,7 +33,8 @@ set -e
 
 
 #Checking if the system has UEFI
-if [-z "$(ls /sys/firmware/efi)"] then 
+if [-z "$(ls /sys/firmware/efi)"] 
+then 
     echo "NO EFI"
     exit
 fi
