@@ -67,11 +67,11 @@ mkfs.fat -F32 -n BOOT $pb
 mkswap /dev/mapper/$vn-swap
 swapon /dev/mapper/$vn-swap
 mkfs.btrfs -q -L ROOT /dev/mapper/$vn-root
-mount o noatime,compress=zstd:2 /dev/mapper/$vn-root /mnt
-drives="etc var usr home snap"
+mount -o noatime,compress=zstd:2 /dev/mapper/$vn-root /mnt
+folders="etc var usr home snap"
 for i in {0..4}
 do
-    lower=$(awk '{print $'$i'}' -e $dri)
+    lower=$(awk '{print $'$i'}' -e $folders)
     upper=$(echo $lower | tr "[:lower:]" "[:upper:]")
     mkfs.btrfs -q -L $upper /dev/mapper/$vn-$lower
     mkdir /mnt/$lower
