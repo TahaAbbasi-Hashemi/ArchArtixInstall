@@ -48,11 +48,8 @@ modprobe dm_mod
 cryptsetup -v --iter-time 5000 --type luks2 --hash sha512 luksFormat $ps
 cryptsetup open $ps $cn
 cryptsetup close $cn
-echo "help2"
-
 cryptsetup open $ps $cn
 pvcreate /dev/mapper/$cn
-echo "help3"
 vgcreate $vn /dev/mapper/$cn
 lvcreate -L 1G $vn -n etc
 lvcreate -L 1G $vn -n swap
@@ -61,8 +58,7 @@ lvcreate -L 1G $vn -n snap
 lvcreate -L 2G $vn -n root
 lvcreate -L 9G $vn -n var
 lvcreate -L 9G $vn -n usr
-
-#vgchange -a n
+vgchange -a y
 
 
 #Formatting
@@ -82,6 +78,14 @@ done
 mkdir /mnt/boot
 mount $pb /mnt/boot
 lsblk
+
+
+#Entering the new system
+basestrap -i /mnt base
+basestrap -i /mnt linux-hardened linux-hardened-headers linux-firmware
+basestrap -i /mnt grub btrfs-progs cryptsetup lvm2
+basestrap -i /mnt elogind-runit haveged-runit cronie-runit dhcpcd-runit artix-archlinux-support
+basestrap -i /mnt zsh dash nano neofetch sudo
 
 
 
