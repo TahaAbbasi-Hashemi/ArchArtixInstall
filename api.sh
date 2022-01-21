@@ -1,20 +1,21 @@
 #!/bin/sh
 
 
-#Constants
-drive=/dev/sda
-driveP=$drive #For a nvme
-cryptname=lvmsys
-dri=/dev/sda
+
+#Names
+un=taha
 cn=lvmsys
-vm=sys
+vn=sys
 hn=beryllium
-volname=sys
-hostname=beryllium
-user=taha
+
+up=qw
+cp=qw
+rp=qw
 
 
 #System Configuration
+dri=/dev/sda #drive
+
 #p-> partion
 #e-> efi
 #b-> boot
@@ -52,9 +53,10 @@ wipefs -af $ps
 #Encrypting
 modprobe dm_crypt
 modprobe dm_mod
-cryptsetup -v --type luks2 -h sha512 luksFormat $ps
-cryptsetup open $ps $cn
-pvcreate --dataalignment /dev/mapper/$cn
+#cryptsetup -v --type luks2 -h sha512 luksFormat $ps
+echo -n $cp | cryptsetup -v -M luks2 -h sha512 luksFormat $llvm
+echo -n $cp | cryptsetup open $ps $cn
+pvcreate /dev/mapper/$cn
 vgcreate $vn /dev/mapper/$cn
 lvcreate -L 1G $vn -n etc
 lvcreate -L 1G $vn -n swap
