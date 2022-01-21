@@ -84,11 +84,11 @@ mount $pe /mnt/boot/efi
 
 
 #Entering the new system
-basestrap -i --noconfirm /mnt base elogind-runit
-basestrap -i --noconfirm /mnt linux-zen linux-zen-headers linux-hardened linux-hardened-headers linux-firmware
-basestrap -i --noconfirm /mnt grub btrfs-progs cryptsetup lvm2
-basestrap -i --noconfirm /mnt haveged-runit cronie-runit dhcpcd-runit artix-archlinux-support
-basestrap -i --noconfirm /mnt zsh dash nano neofetch sudo
+basestrap -i /mnt base elogind-runit
+basestrap -i /mnt linux-zen linux-zen-headers linux-hardened linux-hardened-headers linux-firmware
+basestrap -i /mnt grub btrfs-progs cryptsetup lvm2
+basestrap -i /mnt haveged-runit cronie-runit dhcpcd-runit artix-archlinux-support
+basestrap -i /mnt zsh dash nano neofetch sudo
 
 
 #File system and pacman modifications
