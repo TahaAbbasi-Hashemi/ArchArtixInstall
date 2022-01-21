@@ -128,6 +128,8 @@ EOF
 
 
 
+echo "We got here now"
+sleep 10
 
 
 #closing
