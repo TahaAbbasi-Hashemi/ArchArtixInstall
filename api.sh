@@ -1,5 +1,5 @@
 #!/bin/sh
-
+#Install script to install artix linux.
 
 
 #Names
