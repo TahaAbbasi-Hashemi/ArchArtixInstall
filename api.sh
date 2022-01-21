@@ -21,9 +21,9 @@ psn=3
 pes=+512M
 pbs=+512M
 pss=:
-pe=$drive"$pen" #add a p if using nvme
-pb=$drive"$pbn" #add a p if using nvme
-ps=$drive"$psn" #add a p if using nvme
+pe=$dri"$pen" #add a p if using nvme
+pb=$dri"$pbn" #add a p if using nvme
+ps=$dri"$psn" #add a p if using nvme
 
 
 #Error checking
