@@ -45,7 +45,7 @@ wipefs -af $ps
 #Encrypting
 modprobe dm_crypt
 modprobe dm_mod
-cryptsetup -v --iter-time 5000 --type luks2 --hash sha512 luksFormat $ps
+cryptsetup -v --iter-time 5000 --type luks2 -s 512 --hash sha512 luksFormat $ps
 cryptsetup open $ps $cn
 cryptsetup close $cn
 cryptsetup open $ps $cn
@@ -62,7 +62,8 @@ vgchange -a y
 
 
 #Formatting
-mkfs.fat -F32 -n BOOT $pb
+mkfs.fat -F32 -n EFI $pe
+mkfs.ext4 -L BOOT $pb
 mkswap /dev/mapper/$vn-swap
 swapon /dev/mapper/$vn-swap
 mkfs.btrfs -q -L ROOT /dev/mapper/$vn-root
@@ -77,15 +78,17 @@ do
 done
 mkdir /mnt/boot
 mount $pb /mnt/boot
-lsblk
+mkdir /mnt/boot/efi
+mount $pe /mnt/boot/efi
+#lsblk
 
 
 #Entering the new system
-basestrap -i /mnt base elogind-runit
-basestrap -i /mnt linux-zen linux-zen-headers linux-hardened linux-hardened-headers linux-firmware
-basestrap -i /mnt grub btrfs-progs cryptsetup lvm2
-basestrap -i /mnt haveged-runit cronie-runit dhcpcd-runit artix-archlinux-support
-basestrap -i /mnt zsh dash nano neofetch sudo
+basestrap -i --noconfirm /mnt base elogind-runit
+basestrap -i --noconfirm /mnt linux-zen linux-zen-headers linux-hardened linux-hardened-headers linux-firmware
+basestrap -i --noconfirm /mnt grub btrfs-progs cryptsetup lvm2
+basestrap -i --noconfirm /mnt haveged-runit cronie-runit dhcpcd-runit artix-archlinux-support
+basestrap -i --noconfirm /mnt zsh dash nano neofetch sudo
 
 
 #File system and pacman modifications
@@ -122,10 +125,17 @@ artix-chroot /mnt bash <<- EOF
     pacman -Syu
     pacman-key --populate archlinux
     ln -sfT dash /usr/bin/sh
-    pacman -S neofetch
-    neofetch
+    mkinitcpio -v -P
+    grub-install --efi-directory=/boot/efi --target=x86_64-efi --bootloader-id=GRUB
 EOF
 
+#Editing GRUB
+sysUUID=$(blkid -s UUID -o value $ps)
+sed -i "s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=$sysUUID:$vn root=/dev/mapper/$vn cryptkey=rootfs:\/root\/crypto.keyfile\"/g" /mnt/etc/default/grub
+sed -i "s/#GRUB_ENABLE_CRYPTODISK/GRUB_ENABLE_CRYPTODISK/g" /mnt/etc/default/grub
+#sed -i 's/#GRUB_DISABLE_SUB_MENU=y/GRUB_DISABLE_SUB_MENU=y/g' /mnt/etc/default/grub
+echo 'GRUB_DISABLE_OS_PROBER=false' >> /mnt/etc/default/grub
+artix-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 
 
 echo "We got here now"
@@ -133,10 +143,10 @@ sleep 10
 
 
 #closing
-umount -R /mnt
-swapoff -a
-vgchange -a n
-cryptsetup close $cn
+#umount -R /mnt
+#swapoff -a
+#vgchange -a n
+#cryptsetup close $cn
 
 
 
