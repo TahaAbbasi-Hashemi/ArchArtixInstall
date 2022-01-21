@@ -80,19 +80,15 @@ done
 mkdir /mnt/boot
 mount $pb /mnt/boot
 
-lsblk 
-fdisk -l
-sleep 10
-
 
 
 
 
 
 #closing
-swapoff -a
-vgchange -a n
-cryptsetup close $cn
+#swapoff -a
+#vgchange -a n
+#cryptsetup close $cn
 
 
 
