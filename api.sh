@@ -81,12 +81,48 @@ lsblk
 
 
 #Entering the new system
-basestrap -i /mnt base
-basestrap -i /mnt linux-hardened linux-hardened-headers linux-firmware
+basestrap -i /mnt base elogind-runit
+basestrap -i /mnt linux-zen linux-zen-headers linux-hardened linux-hardened-headers linux-firmware
 basestrap -i /mnt grub btrfs-progs cryptsetup lvm2
-basestrap -i /mnt elogind-runit haveged-runit cronie-runit dhcpcd-runit artix-archlinux-support
+basestrap -i /mnt haveged-runit cronie-runit dhcpcd-runit artix-archlinux-support
 basestrap -i /mnt zsh dash nano neofetch sudo
 
+
+#File system and pacman modifications
+fstabgen -p -U /mnt > /mnt/etc/fstab
+echo "tmpfs /tmp tmpfs rw,nosuid,noatime,nodev 0 0" >> /mnt/etc/fstab
+sed -i 's/#ParallelDownloads/ParallelDownloads/g' /mnt/etc/pacman.conf      #Pacman packages
+echo -e "[extra]\nInclude = /etc/pacman.d/mirrorlist-arch \n\n[community]\nInclude = /etc/pacman.d/mirrorlist-arch \n\n[multilib]\nInclude = /etc/pacman.d/mirrorlist-arch\n" >> /mnt/etc/pacman.conf
+
+
+#Timezone, locale, and hosts/hostname
+ln -sf /usr/share/zoneinfo/America/Toronto /mnt/etc/localtime
+sed -i 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /mnt/etc/locale.gen
+echo "LANG=en_CA.UTF-8\nLANGUAGE=en_CA\nLC_ALL=c" >> /mnt/etc/locale.conf
+echo $hn >> /mnt/etc/hostname
+echo -e "127.0.0.1 localhost\n::1 localhost\n127.0.1.1 "$hn".localdomain "$hn >> /mnt/etc/hosts
+
+
+#Users, sudo/doas, shell
+echo "permit $un as root" > /mnt/etc/doas.conf
+sed -i "s/# %wheel ALL=(ALL) ALL/wheel ALL=(ALL) ALL/g" /etc/sudoers
+
+
+#LUKS and mkinitcpio configuration
+sed -i "s/modconf block/keyboard keymap consolefont modconf block encrypt lvm2/g" /mnt/etc/mkinitcpio.conf
+dd if=/dev/random of=/mnt/root/crypto.keyfile bs=512 count=8 iflag=fullblock
+chmod 000 /mnt/root/crypto.keyfile
+sed -i "s/FILES=(/FILES=(\/crypto_keyfile.bin/g" /mnt/etc/mkinitcpio.conf
+cryptsetup luksAddKey $ps /mnt/root/crypto.keyfile
+
+
+artix-chroot /mnt bash <<- EOF
+    hwclock --systohc
+    locale-gen
+    pacman -Syu
+    pacman-key --populate archlinux
+    ln -sfT dash /usr/bin/sh
+EOF
 
 
 
@@ -97,7 +133,6 @@ umount -R /mnt
 swapoff -a
 vgchange -a n
 cryptsetup close $cn
-
 
 
 
