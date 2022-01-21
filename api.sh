@@ -15,20 +15,14 @@ rp=qw
 
 #System Configuration
 dri=/dev/sda #drive
-
-#p-> partion
-#e-> efi
-#b-> boot
-#s-> sys
 pen=1
 pbn=2
 psn=3
-
 pes=+512M
 pbs=+512M
 pss=:
-
 pe=$drive$pen #add a p if using nvme
+echo $pe
 pb=$drive$pbn #add a p if using nvme
 ps=$drive$psn #add a p if using nvme
 
