@@ -5,6 +5,10 @@
 drive=/dev/sda
 driveP=$drive #For a nvme
 cryptname=lvmsys
+dri=/dev/sda
+cn=lvmsys
+vm=sys
+hn=beryllium
 volname=sys
 hostname=beryllium
 user=taha
@@ -32,23 +36,43 @@ ps=$drive$psn #add a p if using nvme
 set -e
 
 
-#Checking if the system has UEFI
-if [-z "$(ls /sys/firmware/efi)"] 
-then 
-    echo "NO EFI"
-    exit
-fi
-
-
 #Partions
 pacman -S --noconfirm gptfdisk parted #artix only
-sgdisk --zap-all "$drive"
-sgdisk --mbrtogpt "$drive"
-sgdisk --new $pen::$pes --typecode $pen:ef00 --change-name $pen:"EFI" "$drive"
-sgdisk --new $pbn::$pbs --typecode $pbn:ef00 --change-name $pbn:"BOOT" "$drive"
-sgdisk --new $psn::$pss --typecode $psn:8304 --change-name $psn:"SYS" "$drive"
-partprobe $drive #Saves
+sgdisk --zap-all $dri
+sgdisk --mbrtogpt $dri
+sgdisk --new $pen::$pes --typecode $pen:ef00 --change-name $pen:"EFI" $dri
+sgdisk --new $pbn::$pbs --typecode $pbn:ef00 --change-name $pbn:"BOOT" $dri
+sgdisk --new $psn::$pss --typecode $psn:8304 --change-name $psn:"SYS" $dri
+partprobe $dri 
 wipefs -af $pe
 wipefs -af $pb
 wipefs -af $ps
+
+
+#Encrypting
+modprobe dm_crypt
+modprobe dm_mod
+cryptsetup -v --type luks2 -h sha512 luksFormat $ps
+cryptsetup open $ps $cn
+pvcreate --dataalignment /dev/mapper/$cn
+vgcreate $vn /dev/mapper/$cn
+lvcreate -L 1G $vn -n etc
+lvcreate -L 1G $vn -n swap
+lvcreate -L 1G $vn -n home
+lvcreate -L 1G $vn -n snap
+lvcreate -L 2G $vn -n root
+lvcreate -L 9G $vn -n var
+lvcreate -L 9G $vn -n var
+vgscan
+vgchange -ay
+
+
+#Formatting
+
+
+
+
+
+
+
 
