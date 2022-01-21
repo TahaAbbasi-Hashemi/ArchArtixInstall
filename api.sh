@@ -46,7 +46,7 @@ wipefs -af $ps
 modprobe dm_crypt
 modprobe dm_mod
 cryptsetup -v --iter-time 5000 --type luks2 --hash sha512 luksFormat $ps
-crypttesup open $ps $cn
+cryptsetup open $ps $cn
 pvcreate /dev/mapper/$cn
 vgcreate $vn /dev/mapper/$cn
 lvcreate -L 1G $vn -n etc
@@ -58,6 +58,7 @@ lvcreate -L 9G $vn -n var
 lvcreate -L 9G $vn -n var
 vgscan
 vgchange -ay
+cryptsetup close $cn
 
 
 #Formatting
