@@ -115,7 +115,7 @@ sed -i "s/# %wheel ALL=(ALL) ALL/wheel ALL=(ALL) ALL/g" /etc/sudoers
 sed -i "s/modconf block/keyboard keymap consolefont modconf block encrypt lvm2/g" /mnt/etc/mkinitcpio.conf
 dd if=/dev/random of=/mnt/root/crypto.keyfile bs=512 count=8 iflag=fullblock
 chmod 000 /mnt/root/crypto.keyfile
-sed -i "s/FILES=(/FILES=(\/crypto_keyfile.bin/g" /mnt/etc/mkinitcpio.conf
+sed -i "s/FILES=(/FILES=(\/root\/crypto.keyfile/g" /mnt/etc/mkinitcpio.conf
 cryptsetup luksAddKey $ps /mnt/root/crypto.keyfile
 
 
@@ -123,6 +123,7 @@ artix-chroot /mnt bash <<- EOF
     hwclock --systohc
     locale-gen
     pacman -Syu
+    pacman -S --asdeps --noconfirm dosfstools freetype2 fuse2 gptdisk libisoburn mtools os-prober
     pacman-key --populate archlinux
     ln -sfT dash /usr/bin/sh
     mkinitcpio -v -P
