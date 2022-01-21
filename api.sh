@@ -81,6 +81,7 @@ do
 done
 mkdir /mnt/boot
 mount $pb /mnt/boot
+lsblk
 
 
 
