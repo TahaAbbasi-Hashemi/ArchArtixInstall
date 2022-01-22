@@ -138,7 +138,8 @@ artix-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 rep="cryptdevice=UUID=$sysUUID:$cn root=\/dev\/mapper\/$vn-root cryptkey=rootfs:\/root\/crypto.keyfile"
 #rep="cryptdevice=UUID=$sysUUID:$cn root=\/dev\/mapper\/$vn-root"
 echo $rep
-sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=\"/GRUB_CMDLINE_LINUX_DEFAULT=\"$rep/g" /mnt/etc/default/grub
+#sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=\"/GRUB_CMDLINE_LINUX_DEFAULT=\"$rep/g" /mnt/etc/default/grub
+sed -i "s/GRUB_CMDLINE_LINUX=\"/GRUB_CMDLINE_LINUX=\"$rep/g" /mnt/etc/default/grub
 #cat /mnt/etc/default/grub
 sed -i "s/#GRUB_ENABLE_CRYPTODISK=y/GRUB_ENABLE_CRYPTODISK=y/g" /mnt/etc/default/grub
 #sed -i 's/#GRUB_DISABLE_SUB_MENU=y/GRUB_DISABLE_SUB_MENU=y/g' /mnt/etc/default/grub
