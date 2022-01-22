@@ -128,7 +128,7 @@ artix-chroot /mnt bash <<- EOF
     pacman-key --populate archlinux
     ln -sfT dash /usr/bin/sh
     mkinitcpio -v -P
-    grub-install --efi-directory=/boot/efi --target=x86_64-efi --bootloader-id=GRUB
+    grub-install --efi-directory=/boot --target=x86_64-efi --bootloader-id=GRUB
     grub-mkconfig -o /boot/grub/grub.cfg
 EOF
 
