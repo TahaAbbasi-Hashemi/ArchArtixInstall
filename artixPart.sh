@@ -5,6 +5,7 @@
 drive=/dev/sda
 driveP=$drive #For a nvme
 cryptname=lvmsys
+cn=$cryptname
 volname=sys
 hostname=beryllium
 hn=$hostname
@@ -72,17 +73,20 @@ mount /dev/mapper/$cn /mnt
 btrfs su cr /mnt/@
 for i in {1..8}
 do 
-    lower=$(awk '{print $'$i'}' -e subvols)
+    lower=$(echo $subvols | awk '{print $'$i'}')
     btrfs su cr /mnt/@$lower
 done
 umount /mnt
 
 #Mounting subvols
 mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@ /dev/mapper/$cn /mnt
-mkdir /mnt/{usr,etc,var,var/log,snap,home,home/snap,home/downloads,home/config}
+mkdir /mnt/{usr,etc,var,snap,home,opt}
+mkdir /mnt/var/log
+mkdir /mnt/home/{config,downloads,snap}
 mount -o noatime,ssd,compress=zstd:1,space_cache,subvol=@usr /dev/mapper/$cn /mnt/usr
 mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@etc /dev/mapper/$cn /mnt/etc
 mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@var /dev/mapper/$cn /mnt/var
+mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@opt /dev/mapper/$cn /mnt/opt
 mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@varlog /dev/mapper/$cn /mnt/var/log
 mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@rootsnap /dev/mapper/$cn /mnt/snap
 mount -o noatime,ssd,compress=zstd:2,space_cache,subvol=@home /dev/mapper/$cn /mnt/home
@@ -100,7 +104,7 @@ mount $pe /mnt/boot
 #Entering the new system
 basestrap -i /mnt base
 basestrap -i /mnt linux-hardened linux-hardened-headers linux-firmware
-basestrap -i /mnt grub btrfs-progs cryptsetup lvm2
+basestrap -i /mnt grub btrfs-progs cryptsetup-runit efibootmgr
 basestrap -i /mnt elogind-runit haveged-runit cronie-runit dhcpcd-runit artix-archlinux-support
 basestrap -i /mnt zsh dash nano neofetch sudo
 
@@ -108,7 +112,7 @@ basestrap -i /mnt zsh dash nano neofetch sudo
 
 
 #File system and Pacman Modifications
-pacman -S --noconfirm reflector
+#pacman -S --noconfirm reflector
 fstabgen -p -U /mnt >> /mnt/etc/fstab
 echo "tmpfs	/tmp	tmpfs	rw,nosuid,noatime,nodev	0 0" >> /mnt/etc/fstab  #ram drive for /tmp
 sed -i 's/#ParallelDownloads/ParallelDownloads/g' /mnt/etc/pacman.conf      #Pacman packages
@@ -136,7 +140,7 @@ EOF
 #Users, sudo/doas, shell
 basestrap -i /mnt sudo doas
 echo "permit $user as root" > /mnt/etc/doas.conf
-sed -i "s/# %wheel ALL=(ALL) ALL/wheel ALL=(ALL) ALL/g" /etc/sudoers
+sed -i "s/# %wheel ALL=(ALL) ALL/wheel ALL=(ALL) ALL/g" /mnt/etc/sudoers
 #artix-chroot /mnt ln -sfT dash /usr/bin/sh
 
 
@@ -147,10 +151,11 @@ sed -i "s/MODULES=()/MODULES=(btrfs)/g" /mnt/etc/mkinitcpio.conf
 
 #Grub
 sysUUID=$(blkid -s UUID -o value $pr)
-sed -i "s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=$sysUUID:$vn root=/dev/mapper/$vn\"/g" /mnt/etc/default/grub
+sed -i "s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=$sysUUID:$cn root=\/dev\/mapper\/$cn\"/g" /mnt/etc/default/grub
 sed -i "s/#GRUB_ENABLE_CRYPTODISK/GRUB_ENABLE_CRYPTODISK/g" /mnt/etc/default/grub
 sed -i 's/#GRUB_DISABLE_SUB_MENU=y/GRUB_DISABLE_SUB_MENU=y/g' /mnt/etc/default/grub
 #echo 'GRUB_DISABLE_OS_PROBER=false' >> /mnt/etc/default/grub
+mkdir /mnt/boot/efi
 artix-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
 artix-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 
