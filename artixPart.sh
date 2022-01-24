@@ -101,10 +101,10 @@ mount $pe /mnt/boot
 #genfstab -U /mnt >> /mnt/etc/fstab
 
 #Entering the new system
-basestrap /mnt base
+basestrap -i /mnt base
 basestrap /mnt linux-hardened linux-hardened-headers linux-firmware
 basestrap /mnt grub btrfs-progs cryptsetup-runit efibootmgr
-basestrap /mnt elogind-runit haveged-runit cronie-runit dhcpcd-runit artix-archlinux-support
+basestrap /mnt haveged-runit cronie-runit dhcpcd-runit artix-archlinux-support
 basestrap /mnt zsh dash nano neofetch sudo
 
 
