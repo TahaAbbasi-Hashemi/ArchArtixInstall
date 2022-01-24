@@ -101,11 +101,11 @@ mount $pe /mnt/boot
 #genfstab -U /mnt >> /mnt/etc/fstab
 
 #Entering the new system
-basestrap -i /mnt base
+basestrap /mnt base base-devel openrc elogind-openrc
 basestrap /mnt linux-hardened linux-hardened-headers linux-firmware
-basestrap /mnt grub btrfs-progs cryptsetup-runit efibootmgr
-basestrap /mnt haveged-runit cronie-runit dhcpcd-runit artix-archlinux-support
-basestrap /mnt zsh dash nano neofetch sudo
+basestrap /mnt grub btrfs-progs cryptsetup-openrc efibootmgr
+basestrap /mnt haveged-openrc cronie-openrc dhcpcd-openrc artix-archlinux-support
+basestrap /mnt zsh dash nano neofetch sudo doas
 
 
 
@@ -137,7 +137,7 @@ EOF
     
 
 #Users, sudo/doas, shell
-basestrap -i /mnt sudo doas
+#basestrap -i /mnt sudo doas
 echo "permit $user as root" > /mnt/etc/doas.conf
 sed -i "s/# %wheel ALL=(ALL) ALL/wheel ALL=(ALL) ALL/g" /mnt/etc/sudoers
 #artix-chroot /mnt ln -sfT dash /usr/bin/sh
