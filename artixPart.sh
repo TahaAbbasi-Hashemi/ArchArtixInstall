@@ -36,7 +36,8 @@ set -e
 
 
 #Checking if the system has UEFI
-if [-z "$(ls /sys/firmware/efi)"] then 
+if [-z "$(ls /sys/firmware/efi)"] 
+then 
     echo "NO EFI"
     exit
 fi
@@ -47,7 +48,7 @@ pacman -S --noconfirm gptfdisk parted #artix only
 sgdisk --zap-all "$dri"
 sgdisk --mbrtogpt "$dri"
 sgdisk --new $pen::$pes --typecode $pen:ef00 --change-name $pen:"ESP" "$dri"
-sgdisk --new $psn::$pbs --typecode $psn:8200 --change-name $psn:"SWAP" "$dri"
+sgdisk --new $psn::$pss --typecode $psn:8200 --change-name $psn:"SWAP" "$dri"
 sgdisk --new $prn::$prs --typecode $prn:8304 --change-name $prn:"ROOT" "$dri"
 partprobe $dri
 wipefs -af $pe
@@ -57,14 +58,12 @@ wipefs -af $pr
 
 #Encrypting 
 modprobe dm_mod
-cryptsetup -v --type luks --hash sha512 luksFormat $pr #LUKS2 gives hell to grub for some reason
+cryptsetup -v --type luks luksFormat $pr
 cryptsetup open $pr $cn
 
 
 #Formatting and mounting
 mkfs.fat -F32 -n ESP $pe
-#mkswap $ps
-#swapon $ps
 mkfs.btrfs -q -L ROOT /dev/mapper/$cn
 
 #Making subvols
@@ -87,12 +86,12 @@ mount -o noatime,ssd,compress=zstd:1,space_cache,subvol=@usr /dev/mapper/$cn /mn
 mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@etc /dev/mapper/$cn /mnt/etc
 mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@var /dev/mapper/$cn /mnt/var
 mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@opt /dev/mapper/$cn /mnt/opt
-mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@varlog /dev/mapper/$cn /mnt/var/log
+#mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@varlog /dev/mapper/$cn /mnt/var/log
 mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@rootsnap /dev/mapper/$cn /mnt/snap
 mount -o noatime,ssd,compress=zstd:2,space_cache,subvol=@home /dev/mapper/$cn /mnt/home
-mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@homesnap /dev/mapper/$cn /mnt/home/snap
-mount -o noatime,ssd,compress=zstd:4,nodatcow,space_cache,subvol=@homedownloads /dev/mapper/$cn /mnt/home/downloads
-mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@homeconfig /dev/mapper/$cn /mnt/home/config
+#mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@homesnap /dev/mapper/$cn /mnt/home/snap
+#mount -o noatime,ssd,compress=zstd:4,nodatcow,space_cache,subvol=@homedownloads /dev/mapper/$cn /mnt/home/downloads
+#mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@homeconfig /dev/mapper/$cn /mnt/home/config
 mkdir /mnt/boot
 mount $pe /mnt/boot
 
@@ -102,11 +101,11 @@ mount $pe /mnt/boot
 #genfstab -U /mnt >> /mnt/etc/fstab
 
 #Entering the new system
-basestrap -i /mnt base
-basestrap -i /mnt linux-hardened linux-hardened-headers linux-firmware
-basestrap -i /mnt grub btrfs-progs cryptsetup-runit efibootmgr
-basestrap -i /mnt elogind-runit haveged-runit cronie-runit dhcpcd-runit artix-archlinux-support
-basestrap -i /mnt zsh dash nano neofetch sudo
+basestrap /mnt base
+basestrap /mnt linux-hardened linux-hardened-headers linux-firmware
+basestrap /mnt grub btrfs-progs cryptsetup-runit efibootmgr
+basestrap /mnt elogind-runit haveged-runit cronie-runit dhcpcd-runit artix-archlinux-support
+basestrap /mnt zsh dash nano neofetch sudo
 
 
 
