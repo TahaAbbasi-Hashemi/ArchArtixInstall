@@ -156,7 +156,8 @@ sed -i "s/#GRUB_ENABLE_CRYPTODISK/GRUB_ENABLE_CRYPTODISK/g" /mnt/etc/default/gru
 sed -i 's/#GRUB_DISABLE_SUB_MENU=y/GRUB_DISABLE_SUB_MENU=y/g' /mnt/etc/default/grub
 #echo 'GRUB_DISABLE_OS_PROBER=false' >> /mnt/etc/default/grub
 mkdir /mnt/boot/efi
-artix-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
+artix-chroot /mnt mkinitcpio -P
+artix-chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 artix-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 
 
