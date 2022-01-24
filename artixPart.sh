@@ -4,9 +4,8 @@
 #Constants
 drive=/dev/sda
 driveP=$drive #For a nvme
-cryptname=lvmsys
+cryptname=cryptroot
 cn=$cryptname
-volname=sys
 hostname=beryllium
 hn=$hostname
 user=taha
@@ -82,16 +81,18 @@ mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@ /dev/mapper/$cn /mnt
 mkdir /mnt/{usr,etc,var,snap,home,opt}
 mkdir /mnt/var/log
 mkdir /mnt/home/{config,downloads,snap}
-mount -o noatime,ssd,compress=zstd:1,space_cache,subvol=@usr /dev/mapper/$cn /mnt/usr
+#mount -o noatime,ssd,compress=zstd:1,space_cache,subvol=@usr /dev/mapper/$cn /mnt/usr
 mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@etc /dev/mapper/$cn /mnt/etc
-mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@var /dev/mapper/$cn /mnt/var
 mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@opt /dev/mapper/$cn /mnt/opt
-#mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@varlog /dev/mapper/$cn /mnt/var/log
+mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@var /dev/mapper/$cn /mnt/var
+mkdir /mnt/var/log
+mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@varlog /dev/mapper/$cn /mnt/var/log
 mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@rootsnap /dev/mapper/$cn /mnt/snap
 mount -o noatime,ssd,compress=zstd:2,space_cache,subvol=@home /dev/mapper/$cn /mnt/home
-#mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@homesnap /dev/mapper/$cn /mnt/home/snap
-#mount -o noatime,ssd,compress=zstd:4,nodatcow,space_cache,subvol=@homedownloads /dev/mapper/$cn /mnt/home/downloads
-#mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@homeconfig /dev/mapper/$cn /mnt/home/config
+mkdir /mnt/home/{snap,downloads,config}
+mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@homesnap /dev/mapper/$cn /mnt/home/snap
+mount -o noatime,ssd,compress=zstd:4,nodatcow,space_cache,subvol=@homedownloads /dev/mapper/$cn /mnt/home/downloads
+mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@homeconfig /dev/mapper/$cn /mnt/home/config
 mkdir /mnt/boot
 mount $pe /mnt/boot
 
