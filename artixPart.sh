@@ -146,7 +146,7 @@ sed -i "s/# %wheel ALL=(ALL) ALL/wheel ALL=(ALL) ALL/g" /mnt/etc/sudoers
 #LUKS and mkinitcpio configuration
 sed -i "s/modconf block/modconf block encrypt/g" /mnt/etc/mkinitcpio.conf  
 sed -i "s/MODULES=()/MODULES=(btrfs)/g" /mnt/etc/mkinitcpio.conf
-mkinitcpio -P
+#mkinitcpio -P
     
 
 #Grub
