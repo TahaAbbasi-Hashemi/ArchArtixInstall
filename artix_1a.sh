@@ -15,7 +15,7 @@ user=taha
 pacman -S --noconfirm gptfdisk parted #artix only
 sgdisk --zap-all $mdrive
 sgdisk --mbrtogpt $mdrive
-sgdisk --new 1::+1G --typecode 1:ef00 --change-name 1:"BOOT" $bdrive
+sgdisk --new 1::+1G --typecode 1:ef00 --change-name 1:"BOOT" $mdrive
 sgdisk --new 2:::   --typecode 2:8304 --change-name 2:"ROOT" $mdrive
 partprobe $mdrive
 wipefs -af $bd
