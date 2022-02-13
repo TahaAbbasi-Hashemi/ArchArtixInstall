@@ -3,9 +3,8 @@
 #Constants
 mdrive=/dev/sda
 bdrive=/dev/sdb
-md=/dev/sda1
-bd=/dev/sdb1
-sd=/dev/sdb2
+bd=/dev/sda1
+md=/dev/sda2
 
 cn=cryptroot
 hn=beryllium
@@ -14,17 +13,13 @@ user=taha
 
 #Partions
 pacman -S --noconfirm gptfdisk parted #artix only
-sgdisk --zap-all "$mdrive"
-sgdisk --mbrtogpt "$mdrive"
-sgdisk --new 1::: --typecode 1:8304 --change-name 1:"ROOT" "$mdrive"
+sgdisk --zap-all $mdrive
+sgdisk --mbrtogpt $mdrive
+sgdisk --new 1::+1G --typecode 1:ef00 --change-name 1:"BOOT" $bdrive
+sgdisk --new 2:::   --typecode 2:8304 --change-name 2:"ROOT" $mdrive
 partprobe $mdrive
-wipefs -af $md
-
-sgdisk --zap-all $bdrive
-sgdisk --mbrtogpt $bdrive
-sgdisk --new 1::: --typecode 1:ef00 --change-name 1:"BOOT" $bdrive
-partprobe $bdrive
 wipefs -af $bd
+wipefs -af $md
 
 
 #Encrypting 
@@ -38,7 +33,7 @@ mkfs.fat -F32 -n ESP $bd
 mkfs.btrfs -q -L ROOT /dev/mapper/$cn
 
 #Making subvols
-subvols="etc srv opt var varlog usr rootsnap home homesnap homedownloads homeconfig homemedia homebin"
+subvols="etc srv opt var varlog usr snap home"
 mount /dev/mapper/$cn /mnt
 btrfs su cr /mnt/@
 for i in {1..8}
@@ -55,19 +50,13 @@ mkdir /mnt/{usr,srv,etc,var,snap,home,opt}
 #mount -o noatime,ssd,compress=zstd:1,space_cache,passno=2,subvol=@usr /dev/mapper/$cn /mnt/usr
 mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@etc /dev/mapper/$cn /mnt/etc
 mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@opt /dev/mapper/$cn /mnt/opt
-mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@rootsnap /dev/mapper/$cn /mnt/snap
+mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@snap /dev/mapper/$cn /mnt/snap
 mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@var /dev/mapper/$cn /mnt/var
 mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@srv /dev/mapper/$cn /mnt/srv
 mount -o noatime,ssd,compress=zstd:2,space_cache,subvol=@home /dev/mapper/$cn /mnt/home
 mkdir /mnt/var/log
-mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@varlog /dev/mapper/$cn /mnt/var/log
-mkdir /mnt/home/common/{snap,downloads,config,media,bin}
-mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@homesnap /dev/mapper/$cn /mnt/home/snap
-mount -o noatime,ssd,compress=zstd:2,nodatcow,space_cache,subvol=@homedownloads /dev/mapper/$cn /mnt/home/common/downloads
-mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@homeconfig /dev/mapper/$cn /mnt/home/common/config
-mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@homemedia /dev/mapper/$cn /mnt/home/common/media
-mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@homebin /dev/mapper/$cn /mnt/home/common/bin
 mkdir /mnt/boot
+mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@varlog /dev/mapper/$cn /mnt/var/log
 mount $bd /mnt/boot
 
 
@@ -80,14 +69,13 @@ basestrap /mnt haveged-openrc cronie-openrc dhcpcd-openrc artix-archlinux-suppor
 basestrap /mnt zsh dash nano neofetch sudo doas
 
 #Making swap
-cd /mnt/
-truncate -s 0 ./swapfile
-chattr +C ./swapfile
+truncate -s 0 /mnt/.swapfile
+chattr +C /mnt/.swapfile
 btrfs property set ./swapfile compression none
-dd if=/dev/zero of=/swapfile bs=1G count=5 status=progress
-chmod 600 /mnt/swapfile
-mkswap /mnt/swapfile
-swapon /mnt/swapfile
+dd if=/dev/zero of=/mnt/.swapfile bs=1G count=5 status=progress
+chmod 600 /mnt/.swapfile
+mkswap /mnt/.swapfile
+swapon /mnt/.swapfile
 
 
 #File system and Pacman Modifications
