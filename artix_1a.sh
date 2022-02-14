@@ -2,7 +2,6 @@
 
 #Constants
 mdrive=/dev/sda
-bdrive=/dev/sdb
 bd=/dev/sda1
 md=/dev/sda2
 
@@ -48,15 +47,15 @@ mount -o noatime,ssd,compress=zstd:4,space_cache,subvol=@ /dev/mapper/$cn /mnt
 mkdir /mnt/{usr,srv,etc,var,snap,home,opt}
 #This is commented to see if usr is what is causing all the prolems
 #mount -o noatime,ssd,compress=zstd:1,space_cache,passno=2,subvol=@usr /dev/mapper/$cn /mnt/usr
-mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@etc /dev/mapper/$cn /mnt/etc
-mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@opt /dev/mapper/$cn /mnt/opt
-mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@snap /dev/mapper/$cn /mnt/snap
-mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@var /dev/mapper/$cn /mnt/var
-mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@srv /dev/mapper/$cn /mnt/srv
-mount -o noatime,ssd,compress=zstd:2,space_cache,subvol=@home /dev/mapper/$cn /mnt/home
+#mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@etc /dev/mapper/$cn /mnt/etc
+#mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@opt /dev/mapper/$cn /mnt/opt
+#mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@snap /dev/mapper/$cn /mnt/snap
+#mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@var /dev/mapper/$cn /mnt/var
+#mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@srv /dev/mapper/$cn /mnt/srv
+#mount -o noatime,ssd,compress=zstd:2,space_cache,subvol=@home /dev/mapper/$cn /mnt/home
 mkdir /mnt/var/log
 mkdir /mnt/boot
-mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@varlog /dev/mapper/$cn /mnt/var/log
+#mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@varlog /dev/mapper/$cn /mnt/var/log
 mount $bd /mnt/boot
 
 
@@ -69,13 +68,13 @@ basestrap /mnt haveged-openrc cronie-openrc dhcpcd-openrc artix-archlinux-suppor
 basestrap /mnt zsh dash nano neofetch sudo doas
 
 #Making swap
-truncate -s 0 /mnt/.swapfile
-chattr +C /mnt/.swapfile
-btrfs property set ./swapfile compression none
-dd if=/dev/zero of=/mnt/.swapfile bs=1G count=5 status=progress
-chmod 600 /mnt/.swapfile
-mkswap /mnt/.swapfile
-swapon /mnt/.swapfile
+truncate -s 0 /mnt/swapfile
+chattr +C /mnt/swapfile
+btrfs property set /mnt/swapfile compression none
+dd if=/dev/zero of=/mnt/swapfile bs=1G count=5 status=progress
+chmod 600 /mnt/swapfile
+mkswap /mnt/swapfile
+swapon /mnt/swapfile
 
 
 #File system and Pacman Modifications
