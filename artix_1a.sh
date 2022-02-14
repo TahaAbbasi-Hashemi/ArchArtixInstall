@@ -51,7 +51,7 @@ mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@etc /dev/mapper/$cn /mn
 mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@opt /dev/mapper/$cn /mnt/opt
 #mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@snap /dev/mapper/$cn /mnt/snap
 mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@var /dev/mapper/$cn /mnt/var
-mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@srv /dev/mapper/$cn /mnt/srv
+#mount -o noatime,ssd,compress=zstd:5,space_cache,subvol=@srv /dev/mapper/$cn /mnt/srv
 mount -o noatime,ssd,compress=zstd:2,space_cache,subvol=@home /dev/mapper/$cn /mnt/home
 mkdir /mnt/var/log
 mkdir /mnt/boot
