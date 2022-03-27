@@ -54,6 +54,7 @@ sleep 5
 echo RELOADAGENT | gpg-connect-agent
 gpg --decrypt /tmp/efiboot/key.gpg | cryptsetup --key-file - luksOpen $rootdriveP root
 mkfs.btrfs -q -L ROOT /dev/mapper/root
+umount /tmp/efiboot     #unmounting boot
 sleep 5
 
 
@@ -79,8 +80,8 @@ mount -o nodev,nosuid,noexec $bootdrive /mnt/boot
 mount -o noatime,ssd,nodiscard,compress=zstd:3,subvol=@snap /dev/mapper/root /mnt/.snap
     # USER
 mkdir /mnt/home/taha
-mkdir /mnt/home/taha/{devel,sys,.cache,.tmp}
 mount -o noatime,ssd,nodiscard,nosuid,noexec,nodev,compress=zstd:3,subvol=@taha /dev/mapper/root /mnt/home/taha
+mkdir /mnt/home/taha/{devel,sys,.cache,.tmp}
 mount -o noatime,ssd,nodiscard,compress=zstd:1,subvol=@taha_devel /dev/mapper/root /mnt/home/taha/devel
 mount -o noatime,ssd,nodiscard,compress=zstd:3,subvol=@taha_sys /dev/mapper/root /mnt/home/taha/sys
 sleep 5
