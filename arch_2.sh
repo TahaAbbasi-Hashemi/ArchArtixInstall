@@ -4,9 +4,6 @@
 #Constants
 hostname=beryllium
 user=taha
-bootdrive=/dev/sdb
-rootdrive=/dev/sda
-rootdriveP=/dev/sda1    #NVME has an extra p
 
 # TMPFS
 mkdir /home/taha/.cache
@@ -24,7 +21,6 @@ pacman -Rns reflector
 sed -i 's/#ParallelDownloads/ParallelDownloads/g' /etc/pacman.conf
 sed -i 's/#Color/Color/g' /etc/pacman.conf
 pacman -S dash zsh ranger neovim
-mount -o nodev,nosuid,noexec $bootdrive /mnt/boot
 
 # GPG
 cd /tmp
@@ -67,7 +63,6 @@ passwd taha
     
 
 #Systemd boot
-#sysUUID=$(lsblk -o NAME,UUID | grep $rootdriveP | awk '{print $2}')
 mkdir /boot/EFI
 mkdir /boot/loader
 mkdir /boot/loader/entries
