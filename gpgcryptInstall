@@ -16,7 +16,7 @@ build() {
     add_dir "/dev/mapper"
     add_binary "cryptsetup"
     add_binary "dmsetup"
-    add_binary "/usr/local/bin/gpg"
+    add_binary "/usr/bin/gpg"
     add_file "/usr/lib/udev/rules.d/10-dm.rules"
     add_file "/usr/lib/udev/rules.d/13-dm-disk.rules"
     add_file "/usr/lib/udev/rules.d/95-dm-notify.rules"

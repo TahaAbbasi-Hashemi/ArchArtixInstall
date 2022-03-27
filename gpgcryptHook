@@ -66,7 +66,7 @@ run_hook() {
                         while [ ! -e /dev/mapper/${cryptname} ];
                         do
                             sleep 2
-                            /usr/local/bin/gpg -d "${ckeyfile}" 2>/dev/null | cryptsetup --key-file=- luksOpen ${cryptdev} ${cryptname} ${CSQUIET}
+                            /usr/bin/gpg -d "${ckeyfile}" 2>/dev/null | cryptsetup --key-file=- luksOpen ${cryptdev} ${cryptname} ${CSQUIET}
                             dopassphrase=0
                         done
                         rm /dev/tty

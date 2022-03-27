@@ -20,10 +20,11 @@ mount -a
 # REFLECTOR and PACMAN
 pacman -S reflector
 reflector --country Canada --age 12 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
-pacman -Rns relector
+pacman -Rns reflector
 sed -i 's/#ParallelDownloads/ParallelDownloads/g' /etc/pacman.conf
 sed -i 's/#Color/Color/g' /etc/pacman.conf
 pacman -S dash zsh ranger neovim
+mount -o nodev,nosuid,noexec $bootdrive /mnt/boot
 
 # GPG
 cd /tmp
@@ -36,7 +37,7 @@ make && make install
 # MKINITCPIO
 sed -i "s/modconf block/modconf block fsck shutdown encrypt gpgcrypt/g" /etc/mkinitcpio.conf
 sed -i "s/MODULES=()/MODULES=(btrfs vfat)/g" /etc/mkinitcpio.conf
-sed -i "s/BINARIES=()/BINARIES=(/usr/local/bin/gpg)/g" /etc/mkinitcpio.conf
+sed -i "s/BINARIES=()/BINARIES=(/usr/bin/gpg)/g" /etc/mkinitcpio.conf
 mkinitcpio -P
 
 # TIME
