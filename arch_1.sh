@@ -33,7 +33,10 @@ mkdir /tmp/efiboot
 mount -v -t vfat $bootdrive"1" /tmp/efiboot
     #Making the key
 export GPG_TTY=$(tty)
-dd if=/dev/urandom bs=8388607 count=1 | gpg --symmetric --cipher-algo AES256 --output /tmp/efiboot/key.gpg
+#8Mib
+#dd if=/dev/urandom bs=8388607 count=1 | gpg --symmetric --cipher-algo AES256 --output /tmp/efiboot/key.gpg
+#8kib   idk if this will work
+dd if=/dev/urandom bs=8192 count=1 | gpg --symmetric --cipher-algo AES256 --output /tmp/efiboot/key.gpg
 
 
 #Encrypting The Root Partion
