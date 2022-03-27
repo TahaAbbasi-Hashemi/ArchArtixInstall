@@ -63,6 +63,8 @@ passwd taha
     
 
 #Systemd boot
+usb1=$(ls -l /dev/disk/by-id | awk '/sdb1/{print $9}')
+uuid=$(lsblk -o NAME,UUID | awk '/sda1/{print $2}')
 mkdir /boot/EFI
 mkdir /boot/loader
 mkdir /boot/loader/entries
@@ -71,8 +73,8 @@ echo "console-mode max" >> /boot/loader/loader.conf
 echo "title Arch Linux" >> /boot/loader/entries/arch.conf
 echo "linux /vmlinuz-linux-hardened" >> /boot/loader/entries/arch.conf
 echo "initrd /intel-ucode.img" >> /boot/loader/entries/arch.conf
-echo "initrd /inramfs-linux-hardened.img" >> /boot/loader/entries/arch.conf
-echo "options root=/dev/mapper/root cryptdevice=/dev/disk/by-label/ROOT:root cryptkey=/dev/disk/by-label/ESP:vfat:/key.gpg rw loglevel=3 intel_iommu=on rootflates=subvol=@beryllium" >> /boot/loader/entries/arch.conf
+echo "initrd /initramfs-linux-hardened.img" >> /boot/loader/entries/arch.conf
+echo "options root=/dev/mapper/root cryptdevice=/dev/disk/by-uuid/$uuid:root cryptkey=/dev/disk/by-label/ESP:vfat:/key.gpg rw loglevel=3 intel_iommu=on rootflates=subvol=@beryllium" >> /boot/loader/entries/arch.conf
 bootctl --esp-path=/boot install
 
 
