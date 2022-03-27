@@ -25,6 +25,7 @@ sgdisk --mbrtogpt "$bootdrive"
 sgdisk --new 1::: --typecode 1:8304 --change-name 1:"SYS" "$rootdrive"
 partprobe $bootdrive
 wipefs -af $rootdriveP
+lsblk
 sleep 5
 
 
@@ -32,11 +33,13 @@ sleep 5
 mkfs.fat -F32 -n ESP $bootdrive"1"
 mkdir /tmp/efiboot
 mount -v -t vfat $bootdrive"1" /tmp/efiboot
+lsblk
+sleep 5
     #Making the key
 export GPG_TTY=$(tty)
 dd if=/dev/urandom bs=8388607 count=1 | gpg --symmetric --cipher-algo AES256 --output /tmp/efiboot/key.gpg
-sleep 5
 
+sleep 5
 
 #Encrypting The Root Partion
     #Fill with random data. Will take a long time
