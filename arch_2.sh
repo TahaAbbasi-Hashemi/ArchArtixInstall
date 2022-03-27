@@ -1,26 +1,72 @@
 #!/bin/sh
-#Installs arch linux with its boot drive on a USB and its main system on a nvmessd
+# System Configuration for dual factor authentication
 
 #Constants
+hostname=beryllium
 user=taha
-bootdrive=/dev/sda
-rootdrive=/dev/sdb
-rootdriveP=/dev/sdb1    #NVME has an extra p
+bootdrive=/dev/sdb
+rootdrive=/dev/sda
+rootdriveP=/dev/sda1    #NVME has an extra p
 
+# TMPFS
+mkdir /home/taha/.cache
+mkdir /home/taha/.tmp
+mkdir /tmp
+echo "tmpfs /tmp                tmpfs   rw,nosuid,noatime,nodev 0 0" >> /etc/fstab
+echo "tmpfs /home/taha/.cache   tmpfs   rw,nosuid,noatime,nodev 0 0" >> /etc/fstab
+echo "tmpfs /home/taha/.tmp     tmpfs   rw,nosuid,noatime,nodev 0 0" >> /etc/fstab
+mount -a
 
-hwclock --systhoc
-locale-gen
-ln -sfT dash /usr/bin/sh
+# REFLECTOR and PACMAN
+pacman -S reflector
+reflector --country Canada --age 12 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+pacman -Rns relector
+sed -i 's/#ParallelDownloads/ParallelDownloads/g' /etc/pacman.conf
+sed -i 's/#Color/Color/g' /etc/pacman.conf
+pacman -S dash zsh ranger neovim
+
+# GPG
+cd /tmp
+curl -OL https://gnupg.org/ftp/gcrypt/gnupg/gnupg-1.4.23.tar.bz2
+tar xjf gnupg-1.4.23.tar.bz2
+cd gnupg-1.4.23
+CC=gcc LDFLAGS=-static CFLAGS="-g0 -fcommon" ./configure
+make && make install
+
+# MKINITCPIO
+sed -i "s/modconf block/modconf block fsck shutdown encrypt gpgcrypt/g" /etc/mkinitcpio.conf
+sed -i "s/MODULES=()/MODULES=(btrfs vfat)/g" /etc/mkinitcpio.conf
+sed -i "s/BINARIES=()/BINARIES=(/usr/local/bin/gpg)/g" /etc/mkinitcpio.conf
 mkinitcpio -P
+
+# TIME
+ln -sf /usr/share/zoneinfo/America/Toronto /etc/localtime
+hwclock --systhoc
+
+# Locale and language
+sed -i 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
+echo "LANG=en_US.UTF-8\nLANGUAGE=en_US\nLC_ALL=c" >> /etc/locale.conf
+locale-gen
+
+# HOST
+echo "beryllium" >> /etc/hostname
+echo "127.0.0.1 localhost" >> /etc/hosts
+echo "::1 localhost" >> /etc/hosts
+echo "127.0.1.1 beryllium.localdomain beryllium" >> /etc/hosts
+
+# SH
+ln -sfT dash /usr/bin/sh
 chsh -s /bin/zsh
+
+# Usernames and Passwords
 echo "ROOT PASSWORD"
 passwd
-useradd -M -g users -G wheel taha
+useradd -M -g users -G wheel -s /usr/bin/zsh taha
 passwd taha
     
 
 #Systemd boot
-sysUUID=$(lsblk -o NAME,UUID | grep $rootdriveP | awk '{print $2}')
+#sysUUID=$(lsblk -o NAME,UUID | grep $rootdriveP | awk '{print $2}')
 mkdir /boot/EFI
 mkdir /boot/loader
 mkdir /boot/loader/entries
@@ -30,8 +76,8 @@ echo "title Arch Linux" >> /boot/loader/entries/arch.conf
 echo "linux /vmlinuz-linux-hardened" >> /boot/loader/entries/arch.conf
 echo "initrd /intel-ucode.img" >> /boot/loader/entries/arch.conf
 echo "initrd /inramfs-linux-hardened.img" >> /boot/loader/entries/arch.conf
-echo "options cryptdevice=UUID=$sysUUID:root root=/dev/mapper/root rw intel_iommu=on rootflates=subvol=@ loglevel=3 lsm=landlock,yama,apparnor,buf" >> /boot/loader/entries/arch.conf
-bootctl --esp-path=/boot/EFI --boot-path=/boot install
+echo "options root=/dev/mapper/root cryptdevice=/dev/disk/by-label/ROOT:root cryptkey=/dev/disk/by-label/ESP:vfat:/key.gpg rw loglevel=3 intel_iommu=on rootflates=subvol=@beryllium" >> /boot/loader/entries/arch.conf
+bootctl --esp-path=/boot install
 
 
 #Enabling things with systemctl
