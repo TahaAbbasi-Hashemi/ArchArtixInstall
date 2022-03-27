@@ -33,7 +33,8 @@ make && make install
 # MKINITCPIO
 sed -i "s/modconf block/modconf block fsck shutdown encrypt gpgcrypt/g" /etc/mkinitcpio.conf
 sed -i "s/MODULES=()/MODULES=(btrfs vfat)/g" /etc/mkinitcpio.conf
-sed -i "s/BINARIES=()/BINARIES=(/usr/bin/gpg)/g" /etc/mkinitcpio.conf
+sed -i "s/BINARIES=()/BINARIES=(\/usr\/bin\/gpg)/g" /etc/mkinitcpio.conf
+sed -i "s/FILES=()/FILES=(\/boot\/key.gpg)/g" /etc/mkinitcpio.conf
 mkinitcpio -P
 
 # TIME
@@ -74,7 +75,7 @@ echo "title Arch Linux" >> /boot/loader/entries/arch.conf
 echo "linux /vmlinuz-linux-hardened" >> /boot/loader/entries/arch.conf
 echo "initrd /intel-ucode.img" >> /boot/loader/entries/arch.conf
 echo "initrd /initramfs-linux-hardened.img" >> /boot/loader/entries/arch.conf
-echo "options root=/dev/mapper/root cryptdevice=/dev/disk/by-uuid/$uuid:root cryptkey=/dev/disk/by-label/ESP:vfat:/key.gpg rw loglevel=3 intel_iommu=on rootflates=subvol=@beryllium" >> /boot/loader/entries/arch.conf
+echo "options root=/dev/mapper/root cryptdevice=UUID=$uuid:root cryptkey=rootfs:/key.gpg rw loglevel=3 intel_iommu=on rootflates=subvol=@beryllium" >> /boot/loader/entries/arch.conf
 bootctl --esp-path=/boot install
 
 
