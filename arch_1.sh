@@ -23,7 +23,7 @@ wipefs -af $bootdrive"2"
 sgdisk --zap-all "$rootdrive"
 sgdisk --mbrtogpt "$bootdrive"
 sgdisk --new 1::: --typecode 1:8304 --change-name 1:"SYS" "$rootdrive"
-partprobe $bootdrive
+partprobe $rootdrive
 wipefs -af $rootdriveP
 lsblk
 sleep 5
@@ -45,14 +45,14 @@ sleep 5
     #Fill with random data. Will take a long time
 #dd if=/dev/urandom of=$rootdriveP bs=1M status=progress && sync
 echo RELOADAGENT | gpg-connect-agent
-gpg --decrypt /tmp/efiboot/key.gpg | cryptsetup --cipher serpent-xts-plain64 --key-size 512 --hash whirlpool --key-file - luksFormat $bootdriveP
-cryptsetup luksHeaderBackup $bootdriveP --header-backup-file /tmp/efiboot/header.img 
+gpg --decrypt /tmp/efiboot/key.gpg | cryptsetup --cipher serpent-xts-plain64 --key-size 512 --hash whirlpool --key-file - luksFormat $rootdriveP
+cryptsetup luksHeaderBackup $rootdriveP --header-backup-file /tmp/efiboot/header.img 
 sleep 5
 
 
 #Opening the drive for read and write plus setting as btrfs
 echo RELOADAGENT | gpg-connect-agent
-gpg --decrypt /tmp/efiboot/key.gpg | cryptsetup --key-file - luksOpen $bootdriveP root
+gpg --decrypt /tmp/efiboot/key.gpg | cryptsetup --key-file - luksOpen $rootdriveP root
 mkfs.btrfs -q -L ROOT /dev/mapper/root
 sleep 5
 
