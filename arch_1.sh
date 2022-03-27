@@ -76,7 +76,7 @@ sleep 5
 mount -o noatime,ssd,nodiscard,compress=zstd:3,subvol=@beryllium /dev/mapper/root /mnt
     # ROOT
 mkdir /mnt/{boot,media,.snap,home}
-mount -o nodev,nosuid,noexec $bootdrive /mnt/boot
+mount -v -t vfat -o nodev,nosuid,noexec $bootdrive"1" /mnt/boot
 mount -o noatime,ssd,nodiscard,compress=zstd:3,subvol=@snap /dev/mapper/root /mnt/.snap
     # USER
 mkdir /mnt/home/taha
