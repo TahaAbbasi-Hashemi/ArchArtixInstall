@@ -30,11 +30,11 @@ wipefs -af $rootdriveP
 #Setting up Boot usb key
 mkfs.fat -F32 -n ESP $bootdrive"1"
 mkdir /tmp/efiboot
-#mount -v -t vfat $bootdrive"1" /tmp/efiboot
+mount -v -t vfat $bootdrive"1" /tmp/efiboot
     #Making the key
 export GPG_TTY=$(tty)
 #8Mib
-#dd if=/dev/urandom bs=8388607 count=1 | gpg --symmetric --cipher-algo AES256 --output /tmp/efiboot/key.gpg
+dd if=/dev/urandom bs=8388607 count=1 | gpg --symmetric --cipher-algo AES256 --output /tmp/efiboot/key.gpg
 #8kib   idk if this will work
 #dd if=/dev/urandom bs=8192 count=1 | gpg --symmetric --cipher-algo AES256 --output /tmp/efiboot/key.gpg
 
@@ -43,17 +43,15 @@ export GPG_TTY=$(tty)
     #Fill with random data. Will take a long time
 #dd if=/dev/urandom of=$rootdriveP bs=1M status=progress && sync
 echo RELOADAGENT | gpg-connect-agent
-#gpg --decrypt /tmp/efiboot/key.gpg | cryptsetup --cipher serpent-xts-plain64 --key-size 512 --hash whirlpool --key-file - luksFormat $rootdriveP
-cryptsetup --cipher serpent-xts-plain64 --key-size 512 --hash whirlpool -y -v - luksFormat $rootdriveP
+gpg --decrypt /tmp/efiboot/key.gpg | cryptsetup --cipher serpent-xts-plain64 --key-size 512 --hash whirlpool --key-file - luksFormat $rootdriveP
 cryptsetup luksHeaderBackup $rootdriveP --header-backup-file /tmp/efiboot/header.img 
 
 
 #Opening the drive for read and write plus setting as btrfs
 #echo RELOADAGENT | gpg-connect-agent
-#gpg --decrypt /tmp/efiboot/key.gpg | cryptsetup --key-file - luksOpen $rootdriveP root
-cryptsetup - luksOpen $rootdriveP root
+gpg --decrypt /tmp/efiboot/key.gpg | cryptsetup --key-file - luksOpen $rootdriveP root
 mkfs.btrfs -q -L ROOT /dev/mapper/root
-#umount /tmp/efiboot     #unmounting boot
+umount /tmp/efiboot     #unmounting boot
 
 
 #Making subvols
