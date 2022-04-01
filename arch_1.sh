@@ -39,16 +39,17 @@ dd if=/dev/urandom bs=8388607 count=1 | gpg --symmetric --cipher-algo AES256 --o
 #dd if=/dev/urandom bs=8192 count=1 | gpg --symmetric --cipher-algo AES256 --output /tmp/efiboot/key.gpg
 
 
-#Encrypting The Root Partion
-    #Fill with random data. Will take a long time
+# EMPTY DRIVE
 #dd if=/dev/urandom of=$rootdriveP bs=1M status=progress && sync
+
+
+# Encrypting Root drive
 echo RELOADAGENT | gpg-connect-agent
+    #encrypgint
 gpg --decrypt /tmp/efiboot/key.gpg | cryptsetup --cipher serpent-xts-plain64 --key-size 512 --hash whirlpool --key-file - luksFormat $rootdriveP
+    #header backup
 cryptsetup luksHeaderBackup $rootdriveP --header-backup-file /tmp/efiboot/header.img 
-
-
-#Opening the drive for read and write plus setting as btrfs
-#echo RELOADAGENT | gpg-connect-agent
+    #opening
 gpg --decrypt /tmp/efiboot/key.gpg | cryptsetup --key-file - luksOpen $rootdriveP root
 mkfs.btrfs -q -L ROOT /dev/mapper/root
 umount /tmp/efiboot     #unmounting boot

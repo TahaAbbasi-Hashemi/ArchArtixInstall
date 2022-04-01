@@ -24,6 +24,7 @@ pacman -S dash zsh ranger neovim
 
 # GPG
 #cd /tmp
+#pacman -S --asdeps base-devel
 #curl -OL https://gnupg.org/ftp/gcrypt/gnupg/gnupg-1.4.23.tar.bz2
 #tar xjf gnupg-1.4.23.tar.bz2
 #cd gnupg-1.4.23
@@ -33,13 +34,13 @@ pacman -S dash zsh ranger neovim
 # MKINITCPIO
 sed -i "s/modconf block/modconf block fsck shutdown encrypt gpgcrypt/g" /etc/mkinitcpio.conf
 sed -i "s/MODULES=()/MODULES=(btrfs vfat)/g" /etc/mkinitcpio.conf
-#sed -i "s/BINARIES=()/BINARIES=(\/usr\/bin\/gpg)/g" /etc/mkinitcpio.conf
+sed -i "s/BINARIES=()/BINARIES=(\/usr\/local\/bin\/gpg)/g" /etc/mkinitcpio.conf
 #sed -i "s/FILES=()/FILES=(\/boot\/key.gpg)/g" /etc/mkinitcpio.conf
 mkinitcpio -P
 
 # TIME
 ln -sf /usr/share/zoneinfo/America/Toronto /etc/localtime
-hwclock --systhoc
+hwclock --systohc
 
 # Locale and language
 sed -i 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
@@ -75,7 +76,7 @@ echo "title Arch Linux" >> /boot/loader/entries/arch.conf
 echo "linux /vmlinuz-linux-hardened" >> /boot/loader/entries/arch.conf
 echo "initrd /intel-ucode.img" >> /boot/loader/entries/arch.conf
 echo "initrd /initramfs-linux-hardened.img" >> /boot/loader/entries/arch.conf
-echo "options root=/dev/mapper/root cryptdevice=UUID=$uuid:root cryptkey=rootfs:/key.gpg rw loglevel=3 intel_iommu=on rootflates=subvol=@beryllium" >> /boot/loader/entries/arch.conf
+echo "options root=/dev/mapper/root cryptdevice=UUID=$uuid:root cryptkey=/dev/by-id/$usb1:vfat:/key.gpg rw loglevel=3 intel_iommu=on rootflates=subvol=@beryllium" >> /boot/loader/entries/arch.conf
 bootctl --esp-path=/boot install
 
 
