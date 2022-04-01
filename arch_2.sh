@@ -23,13 +23,14 @@ sed -i 's/#Color/Color/g' /etc/pacman.conf
 pacman -S dash zsh ranger neovim
 
 # GPG
-#cd /tmp
-#pacman -S --asdeps base-devel
-#curl -OL https://gnupg.org/ftp/gcrypt/gnupg/gnupg-1.4.23.tar.bz2
-#tar xjf gnupg-1.4.23.tar.bz2
-#cd gnupg-1.4.23
-#CC=gcc LDFLAGS=-static CFLAGS="-g0 -fcommon" ./configure
-#make && make install
+cd /tmp
+pacman -S --asdeps base-devel
+curl -OL https://gnupg.org/ftp/gcrypt/gnupg/gnupg-1.4.23.tar.bz2
+tar xjf gnupg-1.4.23.tar.bz2
+cd gnupg-1.4.23
+CC=gcc LDFLAGS=-static CFLAGS="-g0 -fcommon" ./configure
+make && make install
+cd /
 
 # MKINITCPIO
 sed -i "s/modconf block/modconf block fsck shutdown encrypt gpgcrypt/g" /etc/mkinitcpio.conf
