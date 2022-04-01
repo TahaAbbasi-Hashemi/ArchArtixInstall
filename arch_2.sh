@@ -77,7 +77,7 @@ echo "title Arch Linux" >> /boot/loader/entries/arch.conf
 echo "linux /vmlinuz-linux-hardened" >> /boot/loader/entries/arch.conf
 echo "initrd /intel-ucode.img" >> /boot/loader/entries/arch.conf
 echo "initrd /initramfs-linux-hardened.img" >> /boot/loader/entries/arch.conf
-echo "options root=/dev/mapper/root cryptdevice=UUID=$uuid:root cryptkey=/dev/by-id/$usb1:vfat:/key.gpg rw loglevel=3 intel_iommu=on rootflates=subvol=@beryllium" >> /boot/loader/entries/arch.conf
+echo "options root=/dev/mapper/root cryptdevice=UUID=$uuid:root cryptkey=/dev/disk/by-id/$usb1:vfat:/key.gpg rw loglevel=3 intel_iommu=on rootflates=subvol=@beryllium" >> /boot/loader/entries/arch.conf
 bootctl --esp-path=/boot install
 
 
